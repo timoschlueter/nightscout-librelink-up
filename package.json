@@ -4,6 +4,7 @@
   "description": "Script written in JavaScript (Node) that uploads CGM readings from LibreLink Up to Nightscout",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -28,5 +29,8 @@
   "bugs": {
     "url": "https://github.com/timoschlueter/nightscout-librelink-up/issues"
   },
-  "homepage": "https://github.com/timoschlueter/nightscout-librelink-up#readme"
+  "homepage": "https://github.com/timoschlueter/nightscout-librelink-up#readme",
+  "dependencies": {
+    "node-cron": "^3.0.0"
+  }
 }
