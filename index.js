@@ -1,6 +1,5 @@
 const https = require("https")
-const fs = require("fs");
-const path = require("path");
+const cron = require('node-cron');
 
 /**
  * LibreLink Up Credentials
@@ -18,20 +17,18 @@ const NIGHTSCOUT_API_TOKEN = process.env.NIGHTSCOUT_API_TOKEN;
  * LibreLink Up API Settings (Don't change this unless you know what you are doing)
  */
 const API_URL = "api-eu.libreview.io"
-const VAR_FILE = "token.json";
 const USER_AGENT = "FreeStyle LibreLink Up Nightscout Uploader";
 const LIBRE_LINK_UP_VERSION = "4.1.1";
 const LIBRE_LINK_UP_PRODUCT = "llu.ios";
 
-if (fs.existsSync(VAR_FILE)) {
-    main();
-}
-else {
-    console.log("Please set login credentials");
-}
+let authTicket = {};
+
+logToConsole("Started")
+cron.schedule("* * * * *", () => {
+    main(); 
+});
 
 function main() {
-
     if (hasValidAuthentication()) {
         getGlucoseMeasurement();
     }
@@ -42,7 +39,6 @@ function main() {
 }
 
 function login() {
-
     const data = new TextEncoder().encode(
         JSON.stringify({
             email: LINK_UP_USERNAME,
@@ -66,7 +62,7 @@ function login() {
 
     const req = https.request(options, res => {
         if (res.statusCode !== 200) {
-            console.error("Invalid credentials");
+            errorToConsole("Invalid credentials");
             deleteToken();
         }
 
@@ -75,18 +71,19 @@ function login() {
                 let responseObject = JSON.parse(response);
                 try {
                     updateAuthTicket(responseObject.data.authTicket);
+                    logToConsole("Logged in to LibreLink Up");
                     getGlucoseMeasurement();
                 } catch (err) {
-                    console.error("Invalid authentication token");
+                    errorToConsole("Invalid authentication token");
                 }
             } catch (err) {
-                console.error("Invalid response");
+                errorToConsole("Invalid response");
             }
         })
     })
 
     req.on("error", error => {
-        console.error("Invalid response");
+        errorToConsole("Invalid response");
     })
 
     req.write(data)
@@ -105,13 +102,13 @@ function getGlucoseMeasurement() {
             "Cache-Control": "no-cache",
             "version": LIBRE_LINK_UP_VERSION,
             "product": LIBRE_LINK_UP_PRODUCT,
-            "authorization": "Bearer " + getAuthenticationTokenFromFile()
+            "authorization": "Bearer " + getAuthenticationToken()
         }
     }
 
     const req = https.request(options, res => {
         if (res.statusCode !== 200) {
-            console.error("Invalid credentials");
+            errorToConsole("Invalid credentials");
             deleteToken();
         }
 
@@ -124,16 +121,17 @@ function getGlucoseMeasurement() {
                 }
                 else {
                     let glucoseMeasurement = responseObject.data[0].glucoseMeasurement.Value;
+                    logToConsole("Received blood glucose measurement");
                     uploadToNightscout(glucoseMeasurement);
                 }
             } catch (err) {
-                console.error("Invalid response");
+                errorToConsole("Invalid response");
             }
         })
     })
 
     req.on("error", error => {
-        console.error("Invalid response");
+        errorToConsole("Invalid response");
     })
     req.end()
 }
@@ -166,17 +164,17 @@ function uploadToNightscout(glucoseMeasurement) {
 
     const req = https.request(options, res => {
         if (res.statusCode !== 200) {
-            console.error("Invalid credentials");
+            errorToConsole("Invalid credentials");
             deleteToken();
         }
 
         res.on("data", response => {
-            console.log("Upload to Nightscout successfull");
+            logToConsole("Upload to Nightscout successfull");
         })
     })
 
     req.on("error", error => {
-        console.error("Invalid Nightscout response", error.message);
+        errorToConsole("Invalid Nightscout response", error.message);
     })
 
     req.write(data)
@@ -184,61 +182,34 @@ function uploadToNightscout(glucoseMeasurement) {
 }
 
 function deleteToken() {
-    updateAuthTicket(null);
+    authTicket = {};
 }
 
-function updateAuthTicket(authTicket) {
-    try {
-        const data = fs.readFileSync(VAR_FILE, "utf8")
-        if (data) {
-            try {
-                let dataObject = JSON.parse(data);
-                dataObject.authTicket = authTicket;
-                fs.writeFileSync(VAR_FILE, JSON.stringify(dataObject));
-            } catch (error) {
-                return;
-            }
-        }
-    } catch (error) {
-        return;
-    }
+function updateAuthTicket(newAuthTicket) {
+    authTicket = newAuthTicket;
 }
 
-function getAuthenticationTokenFromFile() {
-    try {
-        const data = fs.readFileSync(VAR_FILE, "utf8")
-        if (data) {
-            try {
-                let dataObject = JSON.parse(data);
-                return dataObject.authTicket.token;
-
-            } catch (error) {
-                return null;
-            }
-        }
-    } catch (error) {
-        return null;
+function getAuthenticationToken() {
+    if (authTicket.token)
+    {
+        return authTicket.token;
     }
+    return null;
 }
 
 function hasValidAuthentication() {
-    try {
-        const data = fs.readFileSync(VAR_FILE, "utf8")
-        if (data) {
-            try {
-                let dataObject = JSON.parse(data);
-                let expiryDate = dataObject.authTicket.expires;
-                let currentDate = Math.round(new Date().getTime() / 1000);
-                if (currentDate < expiryDate) {
-                    return true;
-                }
-                return false;
-
-            } catch (error) {
-                return false;
-            }
-        }
-    } catch (error) {
-        return false;
+    let expiryDate = authTicket.expires;
+    let currentDate = Math.round(new Date().getTime() / 1000);
+    if (currentDate < expiryDate) {
+        return true;
     }
+    return false;
+}
+
+function logToConsole(message) {
+    console.log(new Date().toISOString() + " - " + message)
+}
+
+function errorToConsole(message) {
+    console.error(new Date().toISOString() + " - " + message)
 }
