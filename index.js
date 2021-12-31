@@ -1,5 +1,21 @@
-const https = require("https")
-const cron = require('node-cron');
+const cron = require("node-cron");
+const axios = require("axios");
+const { createLogger, format, transports } = require("winston");
+const { combine, timestamp, printf } = format;
+
+const logFormat = printf(({ level, message, timestamp }) => {
+    return `${timestamp} [${level}]: ${message}`;
+});
+
+const logger = createLogger({
+    format: combine(
+        timestamp(),
+        logFormat
+    ),
+    transports: [
+        new transports.Console(),
+    ]
+});
 
 /**
  * LibreLink Up Credentials
@@ -23,9 +39,22 @@ const LIBRE_LINK_UP_PRODUCT = "llu.ios";
 
 let authTicket = {};
 
-logToConsole("Started")
+const libreLinkUpHttpHeaders = {
+    "User-Agent": USER_AGENT,
+    "Content-Type": "application/json",
+    "version": LIBRE_LINK_UP_VERSION,
+    "product": LIBRE_LINK_UP_PRODUCT,
+}
+
+const nightScoutHttpHeaders = {
+    "api-secret": NIGHTSCOUT_API_TOKEN,
+    "User-Agent": USER_AGENT,
+    "Content-Type": "application/json",
+}
+
+logger.info("Started")
 cron.schedule("* * * * *", () => {
-    main(); 
+    main();
 });
 
 function main() {
@@ -38,147 +67,122 @@ function main() {
     }
 }
 
-function login() {
-    const data = new TextEncoder().encode(
-        JSON.stringify({
-            email: LINK_UP_USERNAME,
-            password: LINK_UP_PASSWORD,
-        })
-    )
-
-    const options = {
-        hostname: API_URL,
-        port: 443,
-        path: "/llu/auth/login",
-        method: "POST",
-        headers: {
-            "User-Agent": USER_AGENT,
-            "Content-Type": "application/json",
-            "Content-Length": data.length,
-            "version": LIBRE_LINK_UP_VERSION,
-            "product": LIBRE_LINK_UP_PRODUCT,
-        }
-    }
-
-    const req = https.request(options, res => {
-        if (res.statusCode !== 200) {
-            errorToConsole("Invalid credentials");
-            deleteToken();
-        }
-
-        res.on("data", response => {
-            try {
-                let responseObject = JSON.parse(response);
-                try {
-                    updateAuthTicket(responseObject.data.authTicket);
-                    logToConsole("Logged in to LibreLink Up");
-                    getGlucoseMeasurement();
-                } catch (err) {
-                    errorToConsole("Invalid authentication token");
-                }
-            } catch (err) {
-                errorToConsole("Invalid response");
-            }
-        })
-    })
-
-    req.on("error", error => {
-        errorToConsole("Invalid response");
-    })
-
-    req.write(data)
-    req.end()
-}
-
-function getGlucoseMeasurement() {
-    const options = {
-        hostname: API_URL,
-        port: 443,
-        path: "/llu/connections",
-        method: "GET",
-        headers: {
-            "User-Agent": USER_AGENT,
-            "Content-Type": "application/json",
-            "Cache-Control": "no-cache",
-            "version": LIBRE_LINK_UP_VERSION,
-            "product": LIBRE_LINK_UP_PRODUCT,
-            "authorization": "Bearer " + getAuthenticationToken()
-        }
-    }
-
-    const req = https.request(options, res => {
-        if (res.statusCode !== 200) {
-            errorToConsole("Invalid credentials");
-            deleteToken();
-        }
-
-        res.on("data", response => {
-            try {
-                let responseObject = JSON.parse(response);
-                if (responseObject.message === "invalid or expired jwt") {
-                    deleteToken();
-                    login();
-                }
-                else {
-                    let glucoseMeasurement = responseObject.data[0].glucoseMeasurement.Value;
-                    logToConsole("Received blood glucose measurement");
-                    uploadToNightscout(glucoseMeasurement);
-                }
-            } catch (err) {
-                errorToConsole("Invalid response");
-            }
-        })
-    })
-
-    req.on("error", error => {
-        errorToConsole("Invalid response");
-    })
-    req.end()
-}
-
-function uploadToNightscout(glucoseMeasurement) {
-    const uploadDate = new Date();
-    const data = new TextEncoder().encode(
-        JSON.stringify([
+async function login() {
+    const url = "https://" + API_URL + "/llu/auth/login"
+    try {
+        const response = await axios.post(url,
             {
-                "type": "sgv",
-                "dateString": uploadDate.toISOString(),
-                "date": uploadDate.getTime(),
-                "sgv": glucoseMeasurement
-            }
-        ])
-    )
+                email: LINK_UP_USERNAME,
+                password: LINK_UP_PASSWORD,
+            },
+            {
+                headers: libreLinkUpHttpHeaders
+            });
 
-    const options = {
-        hostname: NIGHTSCOUT_URL,
-        port: 443,
-        path: "/api/v1/entries",
-        method: "POST",
-        headers: {
-            "api-secret": NIGHTSCOUT_API_TOKEN,
-            "User-Agent": USER_AGENT,
-            "Content-Type": "application/json",
-            "Content-Length": data.length,
+        try {
+            const responseData = response.data;
+            updateAuthTicket(responseData.data.authTicket);
+            logger.info("Logged in to LibreLink Up");
+            getGlucoseMeasurement();
+        } catch (err) {
+            logger.error("Invalid authentication token. Please check your LibreLink Up credentials");
         }
+    } catch (error) {
+        logger.error("Invalid credentials");
+        deleteToken();
     }
+}
 
-    const req = https.request(options, res => {
-        if (res.statusCode !== 200) {
-            errorToConsole("Invalid credentials");
-            deleteToken();
+async function getGlucoseMeasurement() {
+    let connectionId = await getLibreLinkUpConnection();
+
+    const url = "https://" + API_URL + "/llu/connections/" + connectionId + "/graph"
+
+    let authenticatedHttpHeaders = libreLinkUpHttpHeaders;
+    authenticatedHttpHeaders.authorization = "Bearer " + getAuthenticationToken();
+
+    try {
+        const response = await axios.get(url,
+            {
+                headers: authenticatedHttpHeaders
+            });
+
+        const responseData = response.data;
+        let measurementData = responseData.data;
+        logger.info("Received blood glucose measurement");
+        uploadToNightscout(measurementData);
+    } catch (error) {
+        logger.error("Invalid credentials");
+        deleteToken();
+    }
+}
+
+async function getLibreLinkUpConnection() {
+    const url = "https://" + API_URL + "/llu/connections"
+
+    let authenticatedHttpHeaders = libreLinkUpHttpHeaders;
+    authenticatedHttpHeaders.authorization = "Bearer " + getAuthenticationToken();
+
+    try {
+        const response = await axios.get(url,
+            {
+                headers: authenticatedHttpHeaders
+            });
+
+        const responseData = response.data;
+        let connectionData = responseData.data;
+        if (connectionData.length > 1) {
+            logger.error("Multiple connections found. This is not yet supported.")
+            return null;
         }
+        return connectionData[0].patientId;
+    } catch (error) {
+        logger.error("Invalid credentials");
+        deleteToken();
+        return null;
+    }
+}
 
-        res.on("data", response => {
-            logToConsole("Upload to Nightscout successfull");
-        })
-    })
+async function uploadToNightscout(measurementData) {
+    const glucoseMeasurement = measurementData.connection.glucoseMeasurement;
+    const measurementDate = new Date(glucoseMeasurement.Timestamp);
+    const glucoseMeasurementHistory = measurementData.graphData;
 
-    req.on("error", error => {
-        errorToConsole("Invalid Nightscout response", error.message);
-    })
+    let formattedMeasurements = [];
 
-    req.write(data)
-    req.end()
+    // Add the most recent measurement first
+    formattedMeasurements.push({
+        "type": "sgv",
+        "dateString": measurementDate.toISOString(),
+        "date": measurementDate.getTime(),
+        "sgv": glucoseMeasurement.Value
+    });
+
+    // Backfill with measurements from the graph data. Note: Nightscout handles duplicates. 
+    // We don't have to worry about them here.
+    glucoseMeasurementHistory.forEach((glucoseMeasurement) => {
+        let measurementDate = new Date(glucoseMeasurement.Timestamp);
+        formattedMeasurements.push({
+            "type": "sgv",
+            "dateString": measurementDate.toISOString(),
+            "date": measurementDate.getTime(),
+            "sgv": glucoseMeasurement.Value
+        });
+    });
+
+    const url = "https://" + NIGHTSCOUT_URL + "/api/v1/entries"
+    try {
+        const response = await axios.post(url,
+            formattedMeasurements,
+            {
+                headers: nightScoutHttpHeaders
+            });
+
+        logger.info("Upload of " + formattedMeasurements.length + " measurements to Nightscout successfull");
+    } catch (error) {
+        logger.error("Upload to Nightscout failed");
+        deleteToken();
+    }
 }
 
 function deleteToken() {
@@ -190,8 +194,7 @@ function updateAuthTicket(newAuthTicket) {
 }
 
 function getAuthenticationToken() {
-    if (authTicket.token)
-    {
+    if (authTicket.token) {
         return authTicket.token;
     }
     return null;
@@ -204,12 +207,4 @@ function hasValidAuthentication() {
         return true;
     }
     return false;
-}
-
-function logToConsole(message) {
-    console.log(new Date().toISOString() + " - " + message)
-}
-
-function errorToConsole(message) {
-    console.error(new Date().toISOString() + " - " + message)
 }

@@ -31,6 +31,8 @@
   },
   "homepage": "https://github.com/timoschlueter/nightscout-librelink-up#readme",
   "dependencies": {
-    "node-cron": "^3.0.0"
+    "axios": "^0.24.0",
+    "node-cron": "^3.0.0",
+    "winston": "^3.3.3"
   }
 }
