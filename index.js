@@ -145,7 +145,7 @@ async function getLibreLinkUpConnection() {
 
 async function uploadToNightscout(measurementData) {
     const glucoseMeasurement = measurementData.connection.glucoseMeasurement;
-    const measurementDate = new Date(glucoseMeasurement.Timestamp);
+    const measurementDate = getUtcDateFromString(glucoseMeasurement.FactoryTimestamp);
     const glucoseMeasurementHistory = measurementData.graphData;
 
     let formattedMeasurements = [];
@@ -160,13 +160,13 @@ async function uploadToNightscout(measurementData) {
 
     // Backfill with measurements from the graph data. Note: Nightscout handles duplicates. 
     // We don't have to worry about them here.
-    glucoseMeasurementHistory.forEach((glucoseMeasurement) => {
-        let measurementDate = new Date(glucoseMeasurement.Timestamp);
+    glucoseMeasurementHistory.forEach((glucoseMeasurementHistoryEntry) => {
+        let measurementDate = getUtcDateFromString(glucoseMeasurementHistoryEntry.FactoryTimestamp);
         formattedMeasurements.push({
             "type": "sgv",
             "dateString": measurementDate.toISOString(),
             "date": measurementDate.getTime(),
-            "sgv": glucoseMeasurement.Value
+            "sgv": glucoseMeasurementHistoryEntry.Value
         });
     });
 
@@ -207,4 +207,11 @@ function hasValidAuthentication() {
         return true;
     }
     return false;
+}
+
+function getUtcDateFromString(timeStamp) 
+{
+    let utcDate = new Date(timeStamp);
+    utcDate.setTime(utcDate.getTime() - new Date().getTimezoneOffset() * 60 * 1000);
+    return utcDate;
 }
