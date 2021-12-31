@@ -2,11 +2,13 @@ name: Docker CI
 
 on:
   push:
-    - main
-    - "release/**"
+      branches:
+        - main
+        - "release/**"
   pull_request:
-    - main
-    - "release/**"
+      branches:
+        - main
+        - "release/**"
 
 jobs:
   main:
