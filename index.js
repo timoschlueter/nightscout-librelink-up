@@ -3,6 +3,8 @@ const axios = require("axios");
 const { createLogger, format, transports } = require("winston");
 const { combine, timestamp, printf } = format;
 
+const NIGHTSCOUT_TREND_ARROWS = require('./nightscoutTrendArrows');
+
 const logFormat = printf(({ level, message, timestamp }) => {
     return `${timestamp} [${level}]: ${message}`;
 });
@@ -155,6 +157,7 @@ async function uploadToNightscout(measurementData) {
         "type": "sgv",
         "dateString": measurementDate.toISOString(),
         "date": measurementDate.getTime(),
+        "direction": mapTrendArrow(glucoseMeasurement.TrendArrow),
         "sgv": glucoseMeasurement.Value
     });
 
@@ -183,6 +186,23 @@ async function uploadToNightscout(measurementData) {
         logger.error("Upload to Nightscout failed");
         deleteToken();
     }
+}
+
+function mapTrendArrow(libreTrendArrowRaw) {
+	switch (libreTrendArrowRaw) {
+		case 1:
+			return NIGHTSCOUT_TREND_ARROWS.singleDown
+		case 2:
+			return NIGHTSCOUT_TREND_ARROWS.fortyFiveDown
+		case 3: 
+			return NIGHTSCOUT_TREND_ARROWS.flat
+		case 4:
+			return NIGHTSCOUT_TREND_ARROWS.fortyFiveUp
+		case 5:
+			return NIGHTSCOUT_TREND_ARROWS.singleUp
+		default:
+			return NIGHTSCOUT_TREND_ARROWS.notComputable
+	}
 }
 
 function deleteToken() {
