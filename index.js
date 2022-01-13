@@ -189,20 +189,20 @@ async function uploadToNightscout(measurementData) {
 }
 
 function mapTrendArrow(libreTrendArrowRaw) {
-	switch (libreTrendArrowRaw) {
-		case 1:
-			return NIGHTSCOUT_TREND_ARROWS.singleDown
-		case 2:
-			return NIGHTSCOUT_TREND_ARROWS.fortyFiveDown
-		case 3: 
-			return NIGHTSCOUT_TREND_ARROWS.flat
-		case 4:
-			return NIGHTSCOUT_TREND_ARROWS.fortyFiveUp
-		case 5:
-			return NIGHTSCOUT_TREND_ARROWS.singleUp
-		default:
-			return NIGHTSCOUT_TREND_ARROWS.notComputable
-	}
+    switch (libreTrendArrowRaw) {
+        case 1:
+            return NIGHTSCOUT_TREND_ARROWS.singleDown
+        case 2:
+            return NIGHTSCOUT_TREND_ARROWS.fortyFiveDown
+        case 3:
+            return NIGHTSCOUT_TREND_ARROWS.flat
+        case 4:
+            return NIGHTSCOUT_TREND_ARROWS.fortyFiveUp
+        case 5:
+            return NIGHTSCOUT_TREND_ARROWS.singleUp
+        default:
+            return NIGHTSCOUT_TREND_ARROWS.notComputable
+    }
 }
 
 function deleteToken() {
