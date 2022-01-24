@@ -105,3 +105,6 @@ dist
 
 start.sh
 docker-compose.yml
+
+# IntelliJ configuration
+/.idea/
