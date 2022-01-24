@@ -158,7 +158,7 @@ async function uploadToNightscout(measurementData) {
         "dateString": measurementDate.toISOString(),
         "date": measurementDate.getTime(),
         "direction": mapTrendArrow(glucoseMeasurement.TrendArrow),
-        "sgv": glucoseMeasurement.Value
+        "sgv": glucoseMeasurement.ValueInMgPerDl
     });
 
     // Backfill with measurements from the graph data. Note: Nightscout handles duplicates. 
@@ -169,7 +169,7 @@ async function uploadToNightscout(measurementData) {
             "type": "sgv",
             "dateString": measurementDate.toISOString(),
             "date": measurementDate.getTime(),
-            "sgv": glucoseMeasurementHistoryEntry.Value
+            "sgv": glucoseMeasurementHistoryEntry.ValueInMgPerDl
         });
     });
 
