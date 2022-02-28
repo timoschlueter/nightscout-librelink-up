@@ -6,13 +6,13 @@ Simple Script written in JavaScript (Node) that uploads CGM readings from LibreL
 ## Configuration
 The script takes the following environment variables
 
-|Variable|Description|Example|
-|---|---|---|
-|LINK_UP_USERNAME|LibreLink Up Login Email|mail@example.com|
-|LINK_UP_PASSWORD|LibreLink Up Login Password|mypassword|
-|NIGHTSCOUT_URL|Hostname of the Nightscout instance (without https://)|nightscout.yourdomain.com|
-|NIGHTSCOUT_API_TOKEN|SHA1 Hash of Nightscout access token|
-162f14de46149447c3338a8286223de407e3b2fa|
+|Variable| Description                                                                                             | Example                                  |Required|
+|---|---------------------------------------------------------------------------------------------------------|------------------------------------------|---|
+|LINK_UP_USERNAME| LibreLink Up Login Email                                                                                | mail@example.com                         |X|
+|LINK_UP_PASSWORD| LibreLink Up Login Password                                                                             | mypassword                               |X|
+|LINK_UP_CONNECTION| LibreLink Up Patient-ID. Can be received from the console output if multiple connections are available. | 123456abc-abcd-efgh-7891def              ||
+|NIGHTSCOUT_URL| Hostname of the Nightscout instance (without https://)                                                  | nightscout.yourdomain.com                |X|
+|NIGHTSCOUT_API_TOKEN| SHA1 Hash of Nightscout access token                                                                    | 162f14de46149447c3338a8286223de407e3b2fa |X|
 
 ## Usage
 There are different options for using this script.
@@ -72,5 +72,4 @@ services:
 ```
 
 ## ToDo
-- **Enable multiple readings**: Currently the script takes the first persons glucose data that the configured account has been given access to via LibreLink Up. This should either be configurable or automatically get every persons measurements
 - **Integration into Nightscout**: I have not yet looked into the plugin architecture of Nightscout. Maybe this should be converted into a plugin.
