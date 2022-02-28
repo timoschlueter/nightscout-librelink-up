@@ -24,6 +24,7 @@ const logger = createLogger({
  */
 const LINK_UP_USERNAME = process.env.LINK_UP_USERNAME;
 const LINK_UP_PASSWORD = process.env.LINK_UP_PASSWORD;
+const LINK_UP_CONNECTION = process.env.LINK_UP_CONNECTION;
 
 /**
  * Nightscout API
@@ -133,11 +134,46 @@ async function getLibreLinkUpConnection() {
 
         const responseData = response.data;
         let connectionData = responseData.data;
-        if (connectionData.length > 1) {
-            logger.error("Multiple connections found. This is not yet supported.")
+        let connection;
+
+        if (connectionData.length === 0) {
+            logger.error("No LibreLink Up connection found");
             return null;
         }
-        return connectionData[0].patientId;
+
+        if (connectionData.length === 1)
+        {
+            connection = connectionData[0];
+            logger.info("Found 1 LibreLink Up connection.");
+            logger.info("-> The following connection will be used: " + connection.firstName + " " + connection.lastName  + " (Patient-ID: " + connection.patientId + ")");
+            return connection.patientId;
+        }
+
+        if (connectionData.length > 1) {
+            logger.info("Found " + connectionData.length + " LibreLink Up connections:");
+            connectionData.map((connection, index) => {
+                logger.info( "[" + (index + 1) + "] " + connection.firstName + " " + connection.lastName + " (Patient-ID: " + connection.patientId + ")");
+            });
+
+            if (!LINK_UP_CONNECTION)
+            {
+                connection = connectionData[0];
+                logger.info("You did not specify a Patient-ID in the LINK_UP_CONNECTION environment variable.");
+                logger.info("-> The following connection will be used: " + connection.firstName + " " + connection.lastName  + " (Patient-ID: " + connection.patientId + ")");
+                return connection.patientId;
+            }
+            else
+            {
+                connection = connectionData.filter(connection => connection.patientId === LINK_UP_CONNECTION)[0];
+                if (!connection)
+                {
+                    logger.error("The specified Patient-ID was not found.");
+                    return null;
+                }
+                logger.info("-> The following connection will be used: " + connection.firstName + " " + connection.lastName  + " (Patient-ID: " + connection.patientId + ")");
+                return connection.patientId;
+            }
+        }
     } catch (error) {
         logger.error("Invalid credentials");
         deleteToken();
@@ -223,10 +259,7 @@ function getAuthenticationToken() {
 function hasValidAuthentication() {
     let expiryDate = authTicket.expires;
     let currentDate = Math.round(new Date().getTime() / 1000);
-    if (currentDate < expiryDate) {
-        return true;
-    }
-    return false;
+    return currentDate < expiryDate;
 }
 
 function getUtcDateFromString(timeStamp) 
