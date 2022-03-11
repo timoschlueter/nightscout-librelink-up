@@ -39,9 +39,9 @@ const USER_AGENT = "FreeStyle LibreLink Up NightScout Uploader";
 /**
  * LibreLink Up Credentials
  */
-const LINK_UP_USERNAME = process.env.LINK_UP_USERNAME;
-const LINK_UP_PASSWORD = process.env.LINK_UP_PASSWORD;
-const LINK_UP_CONNECTION = process.env.LINK_UP_CONNECTION;
+const LINK_UP_USERNAME = "zanfir.ovidius@gmail.com";
+const LINK_UP_PASSWORD = "1nspiratie@Apple";
+const LINK_UP_CONNECTION = "45459c19-9beb-11ec-9adb-0242ac110006";
 
 /**
  * LibreLink Up API Settings (Don't change this unless you know what you are doing)
