@@ -1,7 +1,6 @@
 # Nightscout LibreLink Up Uploader/Sidecar
 
-Simple Script written in JavaScript (Node) that uploads CGM readings from LibreLink Up to Nightscout. The upload should
-work with at least Freestyle Libre 2 (FGM) and Libre 3 CGM sensors.
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/zanfirovidius/nightscout-librelink-up)
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)][heroku]
 
