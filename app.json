@@ -1,11 +1,11 @@
 {
 	"name": "Nightscout LibreLinkUp Uploader",
-	"description": "Uploads you Blood Glucose from LibreLinkUp to your Nightscout",
+	"description": "Uploads your Blood Glucose from LibreLinkUp to your Nightscout",
 	"formation": {
 		"web": {
-			"quantity": 0,
-			"size": "free"
-		},
+ 			"quantity": 0,
+ 			"size": "free"
+ 		},
 		"worker": {
 			"quantity": 1,
 			"size": "free"
