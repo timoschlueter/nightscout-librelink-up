@@ -13,6 +13,7 @@ The script takes the following environment variables
 |LINK_UP_CONNECTION| LibreLink Up Patient-ID. Can be received from the console output if multiple connections are available. | 123456abc-abcd-efgh-7891def              ||
 |NIGHTSCOUT_URL| Hostname of the Nightscout instance (without https://)                                                  | nightscout.yourdomain.com                |X|
 |NIGHTSCOUT_API_TOKEN| SHA1 Hash of Nightscout access token                                                                    | 162f14de46149447c3338a8286223de407e3b2fa |X|
+|LOG_LEVEL| The setting of verbosity for logging should be info or debug | info |X|
 
 ## Usage
 There are different options for using this script.
