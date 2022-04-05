@@ -1,36 +1,41 @@
 {
-	"name": "Nightscout LibreLinkUp Uploader",
-	"description": "Uploads your Blood Glucose from LibreLinkUp to your Nightscout",
-	"formation": {
-		"web": {
- 			"quantity": 0,
- 			"size": "free"
- 		},
-		"worker": {
-			"quantity": 1,
-			"size": "free"
-		}
-	},
-	"env": {
-		"LINK_UP_USERNAME": {
-			"description": "Your LibreLinkUp (LibreView) username/email address",
-			"value": "",
-			"required": true
-		},
-		"LINK_UP_PASSWORD": {
-			"description": "Your LibreLinkUp (LibreView)",
-			"value": "",
-			"required": true
-		},
-		"NIGHTSCOUT_URL": {
-			"description": "Your Nightscout URL",
-			"value": "",
-			"required": true
-		},
-		"NIGHTSCOUT_API_TOKEN": {
-			"description": "Your Nightscout API token",
-			"value": "",
-			"required": true
-		}
-	}
+  "name": "Nightscout LibreLinkUp Uploader",
+  "description": "Uploads your Blood Glucose from LibreLinkUp to your Nightscout",
+  "formation": {
+    "web": {
+      "quantity": 0,
+      "size": "free"
+    },
+    "worker": {
+      "quantity": 1,
+      "size": "free"
+    }
+  },
+  "env": {
+    "LINK_UP_USERNAME": {
+      "description": "Your LibreLinkUp (LibreView) username/email address",
+      "value": "",
+      "required": true
+    },
+    "LINK_UP_PASSWORD": {
+      "description": "Your LibreLinkUp (LibreView)",
+      "value": "",
+      "required": true
+    },
+    "NIGHTSCOUT_URL": {
+      "description": "Your Nightscout URL",
+      "value": "",
+      "required": true
+    },
+    "NIGHTSCOUT_API_TOKEN": {
+      "description": "Your Nightscout API token",
+      "value": "",
+      "required": true
+    },
+    "LOG_LEVEL": {
+      "description": "The log-level to use.",
+      "value": "info",
+      "required": true
+    }
+  }
 }

@@ -16,7 +16,7 @@ const logger = createLogger({
         logFormat
     ),
     transports: [
-        new transports.Console({level: 'info'}),
+        new transports.Console({level: process.env.LOG_LEVEL}),
     ]
 });
 
@@ -26,6 +26,8 @@ axios.interceptors.response.use(response => {
     logger.error(JSON.stringify(error.response.data));
     return error;
 });
+
+const USER_AGENT = "FreeStyle LibreLink Up NightScout Uploader";
 
 /**
  * LibreLink Up Credentials
@@ -37,16 +39,15 @@ const LINK_UP_CONNECTION = process.env.LINK_UP_CONNECTION;
 /**
  * LibreLink Up API Settings (Don't change this unless you know what you are doing)
  */
-const API_URL = "api-eu.libreview.io"
-const USER_AGENT = "FreeStyle LibreLink Up Nightscout Uploader";
+const LIBRE_LINK_UP_URL = "api-eu.libreview.io"
 const LIBRE_LINK_UP_VERSION = "4.1.1";
 const LIBRE_LINK_UP_PRODUCT = "llu.ios";
 
 /**
- * Nightscout API
+ * NightScout API
  */
-const NIGHTSCOUT_URL = process.env.NIGHTSCOUT_URL;
-const NIGHTSCOUT_API_TOKEN = process.env.NIGHTSCOUT_API_TOKEN;
+const NIGHT_SCOUT_URL = process.env.NIGHTSCOUT_URL;
+const NIGHT_SCOUT_API_TOKEN = process.env.NIGHTSCOUT_API_TOKEN;
 
 /**
  * last known authTicket
@@ -65,16 +66,14 @@ const libreLinkUpHttpHeaders = {
 }
 
 const nightScoutHttpHeaders = {
-    "api-secret": NIGHTSCOUT_API_TOKEN,
+    "api-secret": NIGHT_SCOUT_API_TOKEN,
     "User-Agent": USER_AGENT,
     "Content-Type": "application/json",
 }
 
 const schedule = "*/5 * * * *";
 logger.info("Starting cron schedule: " + schedule)
-cron.schedule(schedule, () => {
-    main();
-});
+cron.schedule(schedule, () => {main();}, {});
 
 async function main() {
     if (hasValidAuthentication() === false) {
@@ -86,9 +85,10 @@ async function main() {
 }
 
 async function login() {
-    const url = "https://" + API_URL + "/llu/auth/login"
     try {
-        const response = await axios.post(url,
+        const url = "https://" + LIBRE_LINK_UP_URL + "/llu/auth/login"
+        const response = await axios.post(
+            url,
             {
                 email: LINK_UP_USERNAME,
                 password: LINK_UP_PASSWORD,
@@ -116,15 +116,16 @@ async function getGlucoseMeasurements() {
             return;
         }
 
-        const url = "https://" + API_URL + "/llu/connections/" + connectionId + "/graph"
-        const response = await axios.get(url,
+        const url = "https://" + LIBRE_LINK_UP_URL + "/llu/connections/" + connectionId + "/graph"
+        const response = await axios.get(
+            url,
             {
                 headers: getLluAuthHeaders()
             });
 
         logger.info("Received blood glucose measurement items");
 
-        uploadToNightscout(response.data.data);
+        await uploadToNightScout(response.data.data);
     } catch (error) {
         logger.error("Error getting glucose measurements", error);
         deleteAuthTicket();
@@ -133,8 +134,9 @@ async function getGlucoseMeasurements() {
 
 async function getLibreLinkUpConnection() {
     try {
-        const url = "https://" + API_URL + "/llu/connections"
-        const response = await axios.get(url,
+        const url = "https://" + LIBRE_LINK_UP_URL + "/llu/connections"
+        const response = await axios.get(
+            url,
             {
                 headers: getLluAuthHeaders()
             });
@@ -160,11 +162,12 @@ async function getLibreLinkUpConnection() {
             return connectionData[0].patientId;
         }
 
-        let connection = connectionData.filter(connection => connection.patientId === LINK_UP_CONNECTION)[0];
+        let connection = connectionData.filter(connectionEntry => connectionEntry.patientId === LINK_UP_CONNECTION)[0];
         if (!connection) {
             logger.error("The specified Patient-ID was not found.");
             return null;
         }
+
         logPickedUpConnection(connection)
         return connection.patientId;
     } catch (error) {
@@ -175,8 +178,9 @@ async function getLibreLinkUpConnection() {
 }
 
 async function lastEntryDate() {
-    const url = "https://" + NIGHTSCOUT_URL + "/api/v1/entries?count=1"
-    const response = await axios.get(url,
+    const url = "https://" + NIGHT_SCOUT_URL + "/api/v1/entries?count=1"
+    const response = await axios.get(
+        url,
         {
             headers: nightScoutHttpHeaders
         });
@@ -184,7 +188,7 @@ async function lastEntryDate() {
     return new Date(response.data.pop().dateString);
 }
 
-async function uploadToNightscout(measurementData) {
+async function uploadToNightScout(measurementData) {
     const glucoseMeasurement = measurementData.connection.glucoseMeasurement;
     const measurementDate = getUtcDateFromString(glucoseMeasurement.FactoryTimestamp);
 
@@ -215,24 +219,25 @@ async function uploadToNightscout(measurementData) {
         }
     });
 
-    const url = "https://" + NIGHTSCOUT_URL + "/api/v1/entries"
     try {
-        await axios.post(url,
+        const url = "https://" + NIGHT_SCOUT_URL + "/api/v1/entries"
+        await axios.post(
+            url,
             formattedMeasurements,
             {
                 headers: nightScoutHttpHeaders
             });
 
-        logger.info("Upload of " + formattedMeasurements.length + " measurements to Nightscout successfull");
+        logger.info("Upload of " + formattedMeasurements.length + " measurements to NightScout succeeded");
     } catch (error) {
-        logger.error("Upload to Nightscout failed ", error);
+        logger.error("Upload to NightScout failed ", error);
     }
 }
 
 function dumpConnectionData(connectionData) {
     logger.debug("Found " + connectionData.length + " LibreLink Up connections:");
-    connectionData.map((connection, index) => {
-        logger.debug("[" + (index + 1) + "] " + connection.firstName + " " + connection.lastName + " (Patient-ID: " + connection.patientId + ")");
+    connectionData.map((connectionEntry, index) => {
+        logger.debug("[" + (index + 1) + "] " + connectionEntry.firstName + " " + connectionEntry.lastName + " (Patient-ID: " + connectionEntry.patientId + ")");
     });
 }
 
