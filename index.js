@@ -1,12 +1,13 @@
 const cron = require("node-cron");
 const axios = require("axios");
-const { createLogger, format, transports } = require("winston");
-const { combine, timestamp, printf } = format;
+
+const {createLogger, format, transports} = require("winston");
+const {combine, timestamp, printf} = format;
 
 const NIGHTSCOUT_TREND_ARROWS = require('./nightscoutTrendArrows');
 
-const logFormat = printf(({ level, message, timestamp }) => {
-    return `${timestamp} [${level}]: ${message}`;
+const logFormat = printf(({level, message}) => {
+    return `[${level}]: ${message}`;
 });
 
 const logger = createLogger({
@@ -15,9 +16,18 @@ const logger = createLogger({
         logFormat
     ),
     transports: [
-        new transports.Console(),
+        new transports.Console({level: process.env.LOG_LEVEL}),
     ]
 });
+
+axios.interceptors.response.use(response => {
+    return response;
+}, error => {
+    logger.error(JSON.stringify(error.response.data));
+    return error;
+});
+
+const USER_AGENT = "FreeStyle LibreLink Up NightScout Uploader";
 
 /**
  * LibreLink Up Credentials
@@ -27,19 +37,21 @@ const LINK_UP_PASSWORD = process.env.LINK_UP_PASSWORD;
 const LINK_UP_CONNECTION = process.env.LINK_UP_CONNECTION;
 
 /**
- * Nightscout API
- */
-const NIGHTSCOUT_URL = process.env.NIGHTSCOUT_URL;
-const NIGHTSCOUT_API_TOKEN = process.env.NIGHTSCOUT_API_TOKEN;
-
-/**
  * LibreLink Up API Settings (Don't change this unless you know what you are doing)
  */
-const API_URL = "api-eu.libreview.io"
-const USER_AGENT = "FreeStyle LibreLink Up Nightscout Uploader";
+const LIBRE_LINK_UP_URL = "api-eu.libreview.io"
 const LIBRE_LINK_UP_VERSION = "4.1.1";
 const LIBRE_LINK_UP_PRODUCT = "llu.ios";
 
+/**
+ * NightScout API
+ */
+const NIGHT_SCOUT_URL = process.env.NIGHTSCOUT_URL;
+const NIGHT_SCOUT_API_TOKEN = process.env.NIGHTSCOUT_API_TOKEN;
+
+/**
+ * last known authTicket
+ */
 let authTicket = {};
 
 const libreLinkUpHttpHeaders = {
@@ -47,33 +59,36 @@ const libreLinkUpHttpHeaders = {
     "Content-Type": "application/json",
     "version": LIBRE_LINK_UP_VERSION,
     "product": LIBRE_LINK_UP_PRODUCT,
+    "Accept-Encoding": "gzip, deflate, br",
+    "Connection": "keep-alive",
+    "Pragma": "no-cache",
+    "Cache-Control": "no-cache",
 }
 
 const nightScoutHttpHeaders = {
-    "api-secret": NIGHTSCOUT_API_TOKEN,
+    "api-secret": NIGHT_SCOUT_API_TOKEN,
     "User-Agent": USER_AGENT,
     "Content-Type": "application/json",
 }
 
-logger.info("Started")
-cron.schedule("* * * * *", () => {
-    main();
-});
+const schedule = "*/5 * * * *";
+logger.info("Starting cron schedule: " + schedule)
+cron.schedule(schedule, () => {main();}, {});
 
-function main() {
-    if (hasValidAuthentication()) {
-        getGlucoseMeasurement();
+async function main() {
+    if (hasValidAuthentication() === false) {
+        logger.info("renew token");
+        deleteAuthTicket();
+        await login();
     }
-    else {
-        deleteToken();
-        login();
-    }
+    await getGlucoseMeasurements();
 }
 
 async function login() {
-    const url = "https://" + API_URL + "/llu/auth/login"
     try {
-        const response = await axios.post(url,
+        const url = "https://" + LIBRE_LINK_UP_URL + "/llu/auth/login"
+        const response = await axios.post(
+            url,
             {
                 email: LINK_UP_USERNAME,
                 password: LINK_UP_PASSWORD,
@@ -83,145 +98,151 @@ async function login() {
             });
 
         try {
-            const responseData = response.data;
-            updateAuthTicket(responseData.data.authTicket);
             logger.info("Logged in to LibreLink Up");
-            getGlucoseMeasurement();
+            updateAuthTicket(response.data.data.authTicket);
         } catch (err) {
-            logger.error("Invalid authentication token. Please check your LibreLink Up credentials");
+            logger.error("Invalid authentication token. Please check your LibreLink Up credentials", err);
         }
     } catch (error) {
-        logger.error("Invalid credentials");
-        deleteToken();
+        logger.error("Invalid credentials", error);
+        deleteAuthTicket();
     }
 }
 
-async function getGlucoseMeasurement() {
-    let connectionId = await getLibreLinkUpConnection();
-
-    const url = "https://" + API_URL + "/llu/connections/" + connectionId + "/graph"
-
-    let authenticatedHttpHeaders = libreLinkUpHttpHeaders;
-    authenticatedHttpHeaders.authorization = "Bearer " + getAuthenticationToken();
-
+async function getGlucoseMeasurements() {
     try {
-        const response = await axios.get(url,
+        let connectionId = await getLibreLinkUpConnection();
+        if (!connectionId) {
+            return;
+        }
+
+        const url = "https://" + LIBRE_LINK_UP_URL + "/llu/connections/" + connectionId + "/graph"
+        const response = await axios.get(
+            url,
             {
-                headers: authenticatedHttpHeaders
+                headers: getLluAuthHeaders()
             });
 
-        const responseData = response.data;
-        let measurementData = responseData.data;
-        logger.info("Received blood glucose measurement");
-        uploadToNightscout(measurementData);
+        logger.info("Received blood glucose measurement items");
+
+        await uploadToNightScout(response.data.data);
     } catch (error) {
-        logger.error("Invalid credentials");
-        deleteToken();
+        logger.error("Error getting glucose measurements", error);
+        deleteAuthTicket();
     }
 }
 
 async function getLibreLinkUpConnection() {
-    const url = "https://" + API_URL + "/llu/connections"
-
-    let authenticatedHttpHeaders = libreLinkUpHttpHeaders;
-    authenticatedHttpHeaders.authorization = "Bearer " + getAuthenticationToken();
-
     try {
-        const response = await axios.get(url,
+        const url = "https://" + LIBRE_LINK_UP_URL + "/llu/connections"
+        const response = await axios.get(
+            url,
             {
-                headers: authenticatedHttpHeaders
+                headers: getLluAuthHeaders()
             });
 
-        const responseData = response.data;
-        let connectionData = responseData.data;
-        let connection;
+        let connectionData = response.data.data;
 
         if (connectionData.length === 0) {
             logger.error("No LibreLink Up connection found");
             return null;
         }
 
-        if (connectionData.length === 1)
-        {
-            connection = connectionData[0];
+        if (connectionData.length === 1) {
             logger.info("Found 1 LibreLink Up connection.");
-            logger.info("-> The following connection will be used: " + connection.firstName + " " + connection.lastName  + " (Patient-ID: " + connection.patientId + ")");
-            return connection.patientId;
+            logPickedUpConnection(connectionData[0]);
+            return connectionData[0].patientId;
         }
 
-        if (connectionData.length > 1) {
-            logger.info("Found " + connectionData.length + " LibreLink Up connections:");
-            connectionData.map((connection, index) => {
-                logger.info( "[" + (index + 1) + "] " + connection.firstName + " " + connection.lastName + " (Patient-ID: " + connection.patientId + ")");
-            });
+        dumpConnectionData(connectionData);
 
-            if (!LINK_UP_CONNECTION)
-            {
-                connection = connectionData[0];
-                logger.info("You did not specify a Patient-ID in the LINK_UP_CONNECTION environment variable.");
-                logger.info("-> The following connection will be used: " + connection.firstName + " " + connection.lastName  + " (Patient-ID: " + connection.patientId + ")");
-                return connection.patientId;
-            }
-            else
-            {
-                connection = connectionData.filter(connection => connection.patientId === LINK_UP_CONNECTION)[0];
-                if (!connection)
-                {
-                    logger.error("The specified Patient-ID was not found.");
-                    return null;
-                }
-                logger.info("-> The following connection will be used: " + connection.firstName + " " + connection.lastName  + " (Patient-ID: " + connection.patientId + ")");
-                return connection.patientId;
-            }
+        if (!LINK_UP_CONNECTION) {
+            logger.warn("You did not specify a Patient-ID in the LINK_UP_CONNECTION environment variable.");
+            logPickedUpConnection(connectionData[0]);
+            return connectionData[0].patientId;
         }
+
+        let connection = connectionData.filter(connectionEntry => connectionEntry.patientId === LINK_UP_CONNECTION)[0];
+        if (!connection) {
+            logger.error("The specified Patient-ID was not found.");
+            return null;
+        }
+
+        logPickedUpConnection(connection)
+        return connection.patientId;
     } catch (error) {
-        logger.error("Invalid credentials");
-        deleteToken();
+        logger.error("getting libreLinkUpConnection: ", error);
+        deleteAuthTicket();
         return null;
     }
 }
 
-async function uploadToNightscout(measurementData) {
+async function lastEntryDate() {
+    const url = "https://" + NIGHT_SCOUT_URL + "/api/v1/entries?count=1"
+    const response = await axios.get(
+        url,
+        {
+            headers: nightScoutHttpHeaders
+        });
+
+    return new Date(response.data.pop().dateString);
+}
+
+async function uploadToNightScout(measurementData) {
     const glucoseMeasurement = measurementData.connection.glucoseMeasurement;
     const measurementDate = getUtcDateFromString(glucoseMeasurement.FactoryTimestamp);
-    const glucoseMeasurementHistory = measurementData.graphData;
+
+    let lastEntry = await lastEntryDate();
 
     let formattedMeasurements = [];
 
     // Add the most recent measurement first
-    formattedMeasurements.push({
-        "type": "sgv",
-        "dateString": measurementDate.toISOString(),
-        "date": measurementDate.getTime(),
-        "direction": mapTrendArrow(glucoseMeasurement.TrendArrow),
-        "sgv": glucoseMeasurement.ValueInMgPerDl
-    });
-
-    // Backfill with measurements from the graph data. Note: Nightscout handles duplicates. 
-    // We don't have to worry about them here.
-    glucoseMeasurementHistory.forEach((glucoseMeasurementHistoryEntry) => {
-        let measurementDate = getUtcDateFromString(glucoseMeasurementHistoryEntry.FactoryTimestamp);
+    if (measurementDate > lastEntry) {
         formattedMeasurements.push({
             "type": "sgv",
             "dateString": measurementDate.toISOString(),
             "date": measurementDate.getTime(),
-            "sgv": glucoseMeasurementHistoryEntry.ValueInMgPerDl
+            "direction": mapTrendArrow(glucoseMeasurement.TrendArrow),
+            "sgv": glucoseMeasurement.ValueInMgPerDl
         });
+    }
+
+    measurementData.graphData.forEach((glucoseMeasurementHistoryEntry) => {
+        let entryDate = getUtcDateFromString(glucoseMeasurementHistoryEntry.FactoryTimestamp);
+        if (entryDate > lastEntry) {
+            formattedMeasurements.push({
+                "type": "sgv",
+                "dateString": entryDate.toISOString(),
+                "date": entryDate.getTime(),
+                "sgv": glucoseMeasurementHistoryEntry.ValueInMgPerDl
+            });
+        }
     });
 
-    const url = "https://" + NIGHTSCOUT_URL + "/api/v1/entries"
     try {
-        const response = await axios.post(url,
+        const url = "https://" + NIGHT_SCOUT_URL + "/api/v1/entries"
+        await axios.post(
+            url,
             formattedMeasurements,
             {
                 headers: nightScoutHttpHeaders
             });
 
-        logger.info("Upload of " + formattedMeasurements.length + " measurements to Nightscout successfull");
+        logger.info("Upload of " + formattedMeasurements.length + " measurements to NightScout succeeded");
     } catch (error) {
-        logger.error("Upload to Nightscout failed");
-        deleteToken();
+        logger.error("Upload to NightScout failed ", error);
     }
+}
+
+function dumpConnectionData(connectionData) {
+    logger.debug("Found " + connectionData.length + " LibreLink Up connections:");
+    connectionData.map((connectionEntry, index) => {
+        logger.debug("[" + (index + 1) + "] " + connectionEntry.firstName + " " + connectionEntry.lastName + " (Patient-ID: " + connectionEntry.patientId + ")");
+    });
+}
+
+function logPickedUpConnection(connection) {
+    logger.info("-> The following connection will be used: " + connection.firstName + " " + connection.lastName + " (Patient-ID: " + connection.patientId + ")");
 }
 
 function mapTrendArrow(libreTrendArrowRaw) {
@@ -241,7 +262,14 @@ function mapTrendArrow(libreTrendArrowRaw) {
     }
 }
 
-function deleteToken() {
+function getLluAuthHeaders() {
+    let authenticatedHttpHeaders = libreLinkUpHttpHeaders;
+    authenticatedHttpHeaders.authorization = "Bearer " + getAuthenticationToken();
+    logger.debug("authenticatedHttpHeaders: " + JSON.stringify(authenticatedHttpHeaders));
+    return authenticatedHttpHeaders;
+}
+
+function deleteAuthTicket() {
     authTicket = {};
 }
 
@@ -253,18 +281,26 @@ function getAuthenticationToken() {
     if (authTicket.token) {
         return authTicket.token;
     }
+
+    logger.warn("no authTicket.token");
+
     return null;
 }
 
 function hasValidAuthentication() {
-    let expiryDate = authTicket.expires;
-    let currentDate = Math.round(new Date().getTime() / 1000);
-    return currentDate < expiryDate;
+    if (authTicket.expires !== undefined) {
+        let currentDate = Math.round(new Date().getTime() / 1000);
+
+        return currentDate < authTicket.expires;
+    }
+
+    logger.info("no authTicket.expires");
+
+    return false;
 }
 
-function getUtcDateFromString(timeStamp) 
-{
+function getUtcDateFromString(timeStamp) {
     let utcDate = new Date(timeStamp);
-    utcDate.setTime(utcDate.getTime() - new Date().getTimezoneOffset() * 60 * 1000);
+    utcDate.setTime(utcDate.getTime() - utcDate.getTimezoneOffset() * 60 * 1000);
     return utcDate;
 }
