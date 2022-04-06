@@ -16,7 +16,7 @@ const logger = createLogger({
         logFormat
     ),
     transports: [
-        new transports.Console({level: process.env.LOG_LEVEL}),
+        new transports.Console({level: process.env.LOG_LEVEL || "info"}),
     ]
 });
 
@@ -71,7 +71,7 @@ const nightScoutHttpHeaders = {
     "Content-Type": "application/json",
 }
 
-const schedule = "*/5 * * * *";
+const schedule = "*/" + (process.env.LINK_UP_TIME_INTERVAL || 5) + " * * * *";
 logger.info("Starting cron schedule: " + schedule)
 cron.schedule(schedule, () => {main();}, {});
 
