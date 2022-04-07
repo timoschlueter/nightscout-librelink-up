@@ -36,6 +36,11 @@
       "description": "The log-level to use.",
       "value": "info",
       "required": true
+    },
+    "LINK_UP_TIME_INTERVAL": {
+      "description": "The time interval (in minutes) in which the values should be retrieved from Libre Link Up",
+      "value": "5",
+      "required": true
     }
   }
 }
