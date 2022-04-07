@@ -1,26 +1,31 @@
 # Nightscout LibreLink Up Uploader/Sidecar
-Simple Script written in JavaScript (Node) that uploads CGM readings from LibreLink Up to Nightscout. The upload happens every minute and should work with at least Freestyle Libre 2 and Libre 3 CGM sensors.
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/timoschlueter/nightscout-librelink-up)
+Simple Script written in JavaScript (Node) that uploads CGM readings from LibreLink Up to Nightscout. The upload should
+work with at least Freestyle Libre 2 (FGM) and Libre 3 CGM sensors.
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)][heroku]
 
 ## Configuration
+
 The script takes the following environment variables
 
-|Variable| Description                                                                                             | Example                                  |Required|
-|---|---------------------------------------------------------------------------------------------------------|------------------------------------------|---|
-|LINK_UP_USERNAME| LibreLink Up Login Email                                                                                | mail@example.com                         |X|
-|LINK_UP_PASSWORD| LibreLink Up Login Password                                                                             | mypassword                               |X|
-|LINK_UP_CONNECTION| LibreLink Up Patient-ID. Can be received from the console output if multiple connections are available. | 123456abc-abcd-efgh-7891def              ||
-|NIGHTSCOUT_URL| Hostname of the Nightscout instance (without https://)                                                  | nightscout.yourdomain.com                |X|
-|NIGHTSCOUT_API_TOKEN| SHA1 Hash of Nightscout access token                                                                    | 162f14de46149447c3338a8286223de407e3b2fa |X|
-|LOG_LEVEL| The setting of verbosity for logging should be info or debug | info |X|
+| Variable              | Description                                                                                             | Example                                  | Required |
+|-----------------------|---------------------------------------------------------------------------------------------------------|------------------------------------------|----------|
+| LINK_UP_TIME_INTERVAL | The time interval of requesting values from libre link up                                               | 5                                        | X        |
+| LINK_UP_USERNAME      | LibreLink Up Login Email                                                                                | mail@example.com                         | X        |
+| LINK_UP_PASSWORD      | LibreLink Up Login Password                                                                             | mypassword                               | X        |
+| LINK_UP_CONNECTION    | LibreLink Up Patient-ID. Can be received from the console output if multiple connections are available. | 123456abc-abcd-efgh-7891def              |          |
+| NIGHTSCOUT_URL        | Hostname of the Nightscout instance (without https://)                                                  | nightscout.yourdomain.com                | X        |
+| NIGHTSCOUT_API_TOKEN  | SHA1 Hash of Nightscout access token                                                                    | 162f14de46149447c3338a8286223de407e3b2fa | X        |
+| LOG_LEVEL             | The setting of verbosity for logging, should be one of info or debug                                    | info                                     | X        |
 
 ## Usage
+
 There are different options for using this script.
 
 ### Variant 1: On Heroku
 
-- Click [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/timoschlueter/nightscout-librelink-up)
+- Click on [![Deploy](https://www.herokucdn.com/deploy/button.svg)][heroku]
 - Login to Heroku if not already happened
 - Provide proper values for the `environment variables`
 - **Important: make sure that yor Nightscout API token is hashed with SHA1**
@@ -32,13 +37,15 @@ The installation process can be startetd by running `npm install` in the root di
 
 To start the process simply create a bash script with the set environment variables (`start.sh`):
 
-```
+```shell
 #!/bin/bash
 export LINK_UP_USERNAME="mail@example.com"
 export LINK_UP_PASSWORD="mypassword"
+export LINK_UP_TIME_INTERVAL="5"
 export NIGHTSCOUT_URL="nightscout.yourdomain.com"
 # use `shasum` instead of `sha1sum` on Mac
 export NIGHTSCOUT_API_TOKEN=$(echo -n "foo-bar-baz" | sha1sum | cut -d ' ' -f 1)
+export LOG_LEVEL="info"
 
 npm start
 ```
@@ -46,19 +53,25 @@ npm start
 Execute the script and check the console output.
 
 ### Variant 3: Docker
+
 The easiest way to use this is to use the latest docker image:
 
-```
+```shell
 docker run -e LINK_UP_USERNAME="mail@example.com" \
-            -e LINK_UP_PASSWORD="mypassword" \
-            -e NIGHTSCOUT_URL="nightscout.yourdomain.com" \
-            -e NIGHTSCOUT_API_TOKEN="librelinku-123456789abcde" timoschlueter/nightscout-librelink-up
+           -e LINK_UP_PASSWORD="mypassword" \
+           -e LINK_UP_TIME_INTERVAL="5" \
+           -e NIGHTSCOUT_URL="nightscout.yourdomain.com" \
+           -e NIGHTSCOUT_API_TOKEN="librelinku-123456789abcde" \
+           -e LOG_LEVEL="info" \
+           timoschlueter/nightscout-librelink-up
 ```
 
 ### Variant 4: Docker Compose
-If you are already using a dockerized Nightscout instance, this image can be easily added to your existing docker-compose file:
 
-```
+If you are already using a dockerized Nightscout instance, this image can be easily added to your existing
+docker-compose file:
+
+```yaml
 version: '3.7'
 
 services:
@@ -68,9 +81,15 @@ services:
     environment:
       LINK_UP_USERNAME: "mail@example.com"
       LINK_UP_PASSWORD: "mypassword"
+      LINK_UP_TIME_INTERVAL: "5"
       NIGHTSCOUT_URL: "nightscout.yourdomain.com"
       NIGHTSCOUT_API_TOKEN: "librelinku-123456789abcde"
+      LOG_LEVEL: "info"
 ```
 
 ## ToDo
-- **Integration into Nightscout**: I have not yet looked into the plugin architecture of Nightscout. Maybe this should be converted into a plugin.
+
+- **Integration into Nightscout**: I have not yet looked into the plugin architecture of Nightscout. Maybe this should
+  be converted into a plugin.
+
+[heroku]: https://heroku.com/deploy?template=https://github.com/timoschlueter/nightscout-librelink-up
