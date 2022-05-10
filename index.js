@@ -23,7 +23,14 @@ const logger = createLogger({
 axios.interceptors.response.use(response => {
     return response;
 }, error => {
-    logger.error(JSON.stringify(error.response.data));
+    if (error.response)
+    {
+        logger.error(JSON.stringify(error.response.data));
+    }
+    else
+    {
+        logger.error(error.message);
+    }
     return error;
 });
 
@@ -185,6 +192,10 @@ async function lastEntryDate() {
             headers: nightScoutHttpHeaders
         });
 
+    if (!response.data || response.data.length === 0)
+    {
+        return null;
+    }
     return new Date(response.data.pop().dateString);
 }
 
