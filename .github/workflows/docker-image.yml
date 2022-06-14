@@ -5,6 +5,7 @@ on:
       branches:
         - main
         - "release/**"
+        - "feature/arm-platform-support"
       tags:        
         - v*.* 
   pull_request:
