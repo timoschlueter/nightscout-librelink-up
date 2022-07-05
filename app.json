@@ -22,6 +22,21 @@
       "value": "",
       "required": true
     },
+    "LINK_UP_CONNECTION": {
+      "description": "Your LibreLinkUp (LibreView) Patient-ID. Can be received from the console output if multiple connections are available.",
+      "value": "",
+      "required": false
+    },
+    "LINK_UP_TIME_INTERVAL": {
+      "description": "The time interval (in minutes) in which the values should be retrieved from Libre Link Up",
+      "value": "5",
+      "required": true
+    },
+    "LINK_UP_REGION": {
+      "description": "Your region. Used to determine the correct LibreLinkUp service (Possible values: US, EU, FR, JP, AP, AU, AE)",
+      "value": "EU",
+      "required": false
+    },
     "NIGHTSCOUT_URL": {
       "description": "Your Nightscout URL",
       "value": "",
@@ -35,11 +50,6 @@
     "LOG_LEVEL": {
       "description": "The log-level to use.",
       "value": "info",
-      "required": true
-    },
-    "LINK_UP_TIME_INTERVAL": {
-      "description": "The time interval (in minutes) in which the values should be retrieved from Libre Link Up",
-      "value": "5",
       "required": true
     }
   }
