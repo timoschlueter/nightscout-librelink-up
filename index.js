@@ -4,7 +4,8 @@ const axios = require("axios");
 const {createLogger, format, transports} = require("winston");
 const {combine, timestamp, printf} = format;
 
-const NIGHTSCOUT_TREND_ARROWS = require('./nightscoutTrendArrows');
+const NIGHTSCOUT_TREND_ARROWS = require("./utils/nightscout-trend-arrows");
+const LLU_API_ENDPOINTS = require("./utils/llu-api-endpoints");
 
 const logFormat = printf(({level, message}) => {
     return `[${level}]: ${message}`;
@@ -46,9 +47,17 @@ const LINK_UP_CONNECTION = process.env.LINK_UP_CONNECTION;
 /**
  * LibreLink Up API Settings (Don't change this unless you know what you are doing)
  */
-const LIBRE_LINK_UP_URL = "api-eu.libreview.io"
-const LIBRE_LINK_UP_VERSION = "4.1.1";
+const LIBRE_LINK_UP_VERSION = "4.2.2";
 const LIBRE_LINK_UP_PRODUCT = "llu.ios";
+const LINK_UP_REGION = process.env.LINK_UP_REGION || "EU";
+const LIBRE_LINK_UP_URL = getLibreLinkUpUrl(LINK_UP_REGION);
+
+function getLibreLinkUpUrl(region) {
+    if (LLU_API_ENDPOINTS.hasOwnProperty(region)) {
+        return LLU_API_ENDPOINTS[region];
+    }
+    return LLU_API_ENDPOINTS.EU;
+}
 
 /**
  * NightScout API
