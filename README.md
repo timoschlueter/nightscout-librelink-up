@@ -70,7 +70,7 @@ docker run -e LINK_UP_USERNAME="mail@example.com" \
 ### Variant 4: Docker Compose
 
 If you are already using a dockerized Nightscout instance, this image can be easily added to your existing
-docker-compose file:
+docker-compose file. In this example, the region is set for germany ("DE"):
 
 ```yaml
 version: '3.7'
@@ -83,6 +83,7 @@ services:
       LINK_UP_USERNAME: "mail@example.com"
       LINK_UP_PASSWORD: "mypassword"
       LINK_UP_TIME_INTERVAL: "5"
+      LINK_UP_REGION: "DE"
       NIGHTSCOUT_URL: "nightscout.yourdomain.com"
       NIGHTSCOUT_API_TOKEN: "librelinku-123456789abcde"
       LOG_LEVEL: "info"
