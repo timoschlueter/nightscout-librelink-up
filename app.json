@@ -33,7 +33,7 @@
       "required": true
     },
     "LINK_UP_REGION": {
-      "description": "Your region. Used to determine the correct LibreLinkUp service (Possible values: US, EU, FR, JP, AP, AU, AE)",
+      "description": "Your region. Used to determine the correct LibreLinkUp service (Possible values: US, EU, DE, FR, JP, AP, AU, AE)",
       "value": "EU",
       "required": false
     },

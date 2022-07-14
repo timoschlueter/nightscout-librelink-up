@@ -9,16 +9,16 @@ work with at least Freestyle Libre 2 (FGM) and Libre 3 CGM sensors.
 
 The script takes the following environment variables
 
-| Variable              | Description                                                                                                  | Example                                  | Required |
-|-----------------------|--------------------------------------------------------------------------------------------------------------|------------------------------------------|--------|
-| LINK_UP_USERNAME      | LibreLink Up Login Email                                                                                     | mail@example.com                         | X      |
-| LINK_UP_PASSWORD      | LibreLink Up Login Password                                                                                  | mypassword                               | X      |
-| LINK_UP_CONNECTION    | LibreLink Up Patient-ID. Can be received from the console output if multiple connections are available.      | 123456abc-abcd-efgh-7891def              |        |
-| LINK_UP_TIME_INTERVAL | The time interval of requesting values from libre link up                                                    | 5                                        |        |
-| LINK_UP_REGION        | Your region. Used to determine the correct LibreLinkUp service (Possible values: US, EU, FR, JP, AP, AU, AE) | EU                                       |        |
-| NIGHTSCOUT_URL        | Hostname of the Nightscout instance (without https://)                                                       | nightscout.yourdomain.com                | X      |
-| NIGHTSCOUT_API_TOKEN  | SHA1 Hash of Nightscout access token                                                                         | 162f14de46149447c3338a8286223de407e3b2fa | X      |
-| LOG_LEVEL             | The setting of verbosity for logging, should be one of info or debug                                         | info                                     | X      |
+| Variable              | Description                                                                                                      | Example                                  | Required |
+|-----------------------|------------------------------------------------------------------------------------------------------------------|------------------------------------------|--------|
+| LINK_UP_USERNAME      | LibreLink Up Login Email                                                                                         | mail@example.com                         | X      |
+| LINK_UP_PASSWORD      | LibreLink Up Login Password                                                                                      | mypassword                               | X      |
+| LINK_UP_CONNECTION    | LibreLink Up Patient-ID. Can be received from the console output if multiple connections are available.          | 123456abc-abcd-efgh-7891def              |        |
+| LINK_UP_TIME_INTERVAL | The time interval of requesting values from libre link up                                                        | 5                                        |        |
+| LINK_UP_REGION        | Your region. Used to determine the correct LibreLinkUp service (Possible values: US, EU, DE, FR, JP, AP, AU, AE) | EU                                       |        |
+| NIGHTSCOUT_URL        | Hostname of the Nightscout instance (without https://)                                                           | nightscout.yourdomain.com                | X      |
+| NIGHTSCOUT_API_TOKEN  | SHA1 Hash of Nightscout access token                                                                             | 162f14de46149447c3338a8286223de407e3b2fa | X      |
+| LOG_LEVEL             | The setting of verbosity for logging, should be one of info or debug                                             | info                                     | X      |
 
 ## Usage
 
@@ -70,7 +70,7 @@ docker run -e LINK_UP_USERNAME="mail@example.com" \
 ### Variant 4: Docker Compose
 
 If you are already using a dockerized Nightscout instance, this image can be easily added to your existing
-docker-compose file:
+docker-compose file. In this example, the region is set for germany ("DE"):
 
 ```yaml
 version: '3.7'
@@ -83,6 +83,7 @@ services:
       LINK_UP_USERNAME: "mail@example.com"
       LINK_UP_PASSWORD: "mypassword"
       LINK_UP_TIME_INTERVAL: "5"
+      LINK_UP_REGION: "DE"
       NIGHTSCOUT_URL: "nightscout.yourdomain.com"
       NIGHTSCOUT_API_TOKEN: "librelinku-123456789abcde"
       LOG_LEVEL: "info"
