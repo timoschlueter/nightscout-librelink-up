@@ -1,6 +1,6 @@
 {
   "name": "nightscout-librelink-up",
-  "version": "1.8.2",
+  "version": "1.9.0",
   "description": "Script written in JavaScript (Node) that uploads CGM readings from LibreLink Up to Nightscout",
   "main": "index.js",
   "scripts": {
@@ -33,6 +33,6 @@
   "dependencies": {
     "axios": "^0.27.2",
     "node-cron": "3.0.2",
-    "winston": "^3.8.1"
+    "winston": "^3.8.2"
   }
 }

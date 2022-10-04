@@ -62,8 +62,16 @@ function getLibreLinkUpUrl(region) {
 /**
  * NightScout API
  */
-const NIGHT_SCOUT_URL = process.env.NIGHTSCOUT_URL;
-const NIGHT_SCOUT_API_TOKEN = process.env.NIGHTSCOUT_API_TOKEN;
+const NIGHTSCOUT_URL = process.env.NIGHTSCOUT_URL;
+const NIGHTSCOUT_API_TOKEN = process.env.NIGHTSCOUT_API_TOKEN;
+const NIGHTSCOUT_DISABLE_HTTPS = process.env.NIGHTSCOUT_DISABLE_HTTPS || false;
+
+function getNightscoutUrl() {
+    if (NIGHTSCOUT_DISABLE_HTTPS === "true") {
+        return "http://" + NIGHTSCOUT_URL;
+    }
+    return "https://" + NIGHTSCOUT_URL;
+}
 
 /**
  * last known authTicket
@@ -82,14 +90,18 @@ const libreLinkUpHttpHeaders = {
 }
 
 const nightScoutHttpHeaders = {
-    "api-secret": NIGHT_SCOUT_API_TOKEN,
+    "api-secret": NIGHTSCOUT_API_TOKEN,
     "User-Agent": USER_AGENT,
     "Content-Type": "application/json",
 }
 
-const schedule = "*/" + (process.env.LINK_UP_TIME_INTERVAL || 5) + " * * * *";
-logger.info("Starting cron schedule: " + schedule)
-cron.schedule(schedule, () => {main();}, {});
+if (process.env.SINGLE_SHOT === "true") {
+    main().then();
+} else {
+    const schedule = "*/" + (process.env.LINK_UP_TIME_INTERVAL || 5) + " * * * *";
+    logger.info("Starting cron schedule: " + schedule)
+    cron.schedule(schedule, () => { main().then() }, {});
+}
 
 async function main() {
     if (hasValidAuthentication() === false) {
@@ -138,8 +150,6 @@ async function getGlucoseMeasurements() {
             {
                 headers: getLluAuthHeaders()
             });
-
-        logger.info("Received blood glucose measurement items");
 
         await uploadToNightScout(response.data.data);
     } catch (error) {
@@ -194,7 +204,7 @@ async function getLibreLinkUpConnection() {
 }
 
 async function lastEntryDate() {
-    const url = "https://" + NIGHT_SCOUT_URL + "/api/v1/entries?count=1"
+    const url = getNightscoutUrl() + "/api/v1/entries?count=1"
     const response = await axios.get(
         url,
         {
@@ -239,18 +249,31 @@ async function uploadToNightScout(measurementData) {
         }
     });
 
-    try {
-        const url = "https://" + NIGHT_SCOUT_URL + "/api/v1/entries"
-        await axios.post(
-            url,
-            formattedMeasurements,
+    if (formattedMeasurements.length > 0)
+    {
+        logger.info("Trying to upload " + formattedMeasurements.length + " glucose measurement items to Nightscout");
+        try
+        {
+            const url = getNightscoutUrl() + "/api/v1/entries"
+            const response = await axios.post(
+                url,
+                formattedMeasurements,
+                {
+                    headers: nightScoutHttpHeaders
+                });
+            if (response.status !== 200)
             {
-                headers: nightScoutHttpHeaders
-            });
-
-        logger.info("Upload of " + formattedMeasurements.length + " measurements to NightScout succeeded");
-    } catch (error) {
-        logger.error("Upload to NightScout failed ", error);
+                logger.error("Upload to NightScout failed ", response.statusText);
+            } else
+            {
+                logger.info("Upload of " + formattedMeasurements.length + " measurements to Nightscout succeeded");
+            }
+        } catch (error)
+        {
+            logger.error("Upload to NightScout failed ", error);
+        }
+    } else {
+        logger.info("No new measurements to upload");
     }
 }
 

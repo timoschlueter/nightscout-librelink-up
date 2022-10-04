@@ -47,10 +47,20 @@
       "value": "",
       "required": true
     },
+    "NIGHTSCOUT_DISABLE_HTTPS": {
+      "description": "Disables the HTTPS requirement for Nightscout URLs",
+      "value": "",
+      "required": false
+    },
     "LOG_LEVEL": {
       "description": "The log-level to use.",
       "value": "info",
-      "required": true
+      "required": false
+    },
+    "SINGLE_SHOT": {
+      "description": "Disables the scheduler and runs the script just once",
+      "value": "",
+      "required": false
     }
   }
 }
