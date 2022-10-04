@@ -1,6 +1,6 @@
 FROM node:18
 
-LABEL version="1.8.2"
+LABEL version="1.9.0"
 LABEL description="Script written in JavaScript (Node) that uploads CGM readings from LibreLink Up to Nightscout"
 
 # Create app directory
