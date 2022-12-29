@@ -1,6 +1,6 @@
 /**
  * Nightscout LibreLink Up Uploader/Sidecar
- * Simple Script written in TypeScript that uploads CGM readings from LibreLink Up to Nightscout.
+ * Script written in TypeScript that uploads CGM readings from LibreLink Up to Nightscout.
  *
  * SPDX-License-Identifier: MIT
  */
