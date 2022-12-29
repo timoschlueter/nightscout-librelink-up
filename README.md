@@ -1,6 +1,6 @@
 # Nightscout LibreLink Up Uploader/Sidecar
 
-Simple Script written in JavaScript (Node) that uploads CGM readings from LibreLink Up to Nightscout. The upload should
+Script written in TypeScript that uploads CGM readings from LibreLink Up to Nightscout. The upload should
 work with at least Freestyle Libre 2 (FGM) and Libre 3 CGM sensors.
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)][heroku]
@@ -36,7 +36,7 @@ There are different options for using this script.
 
 ### Variant 2: Local
 
-The installation process can be startetd by running `npm install` in the root directory.
+The installation process can be started by running `npm install` in the root directory.
 
 To start the process simply create a bash script with the set environment variables (`start.sh`):
 

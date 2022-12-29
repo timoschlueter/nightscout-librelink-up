@@ -1,4 +1,8 @@
-const LLU_API_ENDPOINTS = {
+interface LluApiEndpoints {
+    [key: string]: string;
+}
+
+export const LLU_API_ENDPOINTS: LluApiEndpoints = {
     US: "api-us.libreview.io",
     EU: "api-eu.libreview.io",
     DE: "api-de.libreview.io",
@@ -7,6 +11,4 @@ const LLU_API_ENDPOINTS = {
     AP: "api-ap.libreview.io",
     AU: "api-au.libreview.io",
     AE: "api-ae.libreview.io",
-}
-
-module.exports = LLU_API_ENDPOINTS;
+} as const;
