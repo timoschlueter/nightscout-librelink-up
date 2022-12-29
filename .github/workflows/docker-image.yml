@@ -21,14 +21,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Update Docker Hub Description
-        uses: peter-evans/dockerhub-description@v3
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_TOKEN }}
-          repository: peterevans/dockerhub-description
       -
         name: Docker Build and Push (Dev)
         id: docker_build_dev
