@@ -1,12 +1,13 @@
 {
   "name": "nightscout-librelink-up",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Script written in TypeScript that uploads CGM readings from LibreLink Up to Nightscout",
   "main": "dist/index.js",
   "scripts": {
     "build": "npx tsc",
     "start": "npx ts-node --transpile-only src/index.ts",
     "start-dev": "npx ts-node src/index.ts",
+    "start-heroku": "node dist/index.js",
     "lint": "npx eslint . --fix",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
