@@ -1,6 +1,6 @@
 // According to https://github.com/nightscout/cgm-remote-monitor/blob/46418c7ff275ae80de457209c1686811e033b5dd/lib/plugins/direction.js#L5
 
-const NIGHTSCOUT_TREND_ARROWS = {
+export const NIGHTSCOUT_TREND_ARROWS = {
     tripleUp: "TripleUp",
     doubleUp: "DoubleUp",
     singleUp: "SingleUp",
@@ -13,5 +13,3 @@ const NIGHTSCOUT_TREND_ARROWS = {
     notComputable: "NOT COMPUTABLE",
     rateOutOfRange: "RATE OUT OF RANGE"
 }
-
-module.exports = NIGHTSCOUT_TREND_ARROWS;
