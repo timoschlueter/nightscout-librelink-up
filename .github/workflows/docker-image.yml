@@ -28,6 +28,7 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
           repository: peterevans/dockerhub-description
+          readme-filepath: ../README.md
       -
         name: Docker Build and Push (Dev)
         id: docker_build_dev
