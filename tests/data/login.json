@@ -1,0 +1,111 @@
+{
+  "status": 0,
+  "data": {
+    "user": {
+      "id": "7ad66b40-ba9b-401e-9845-4f49f998cf16",
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john.doe@example.com",
+      "country": "DE",
+      "uiLanguage": "de-DE",
+      "communicationLanguage": "de-DE",
+      "accountType": "pat",
+      "uom": "1",
+      "dateFormat": "2",
+      "timeFormat": "2",
+      "emailDay": [
+        1
+      ],
+      "system": {
+        "messages": {
+          "firstUsePhoenix": 1621354475,
+          "firstUsePhoenixReportsDataMerged": 1621354475,
+          "lluAnalyticsNewAccount": 1658317179,
+          "lluGettingStartedBanner": 1631719564,
+          "lluNewFeatureModal": 1658317179,
+          "lvWebPostRelease": "3.7.22"
+        }
+      },
+      "details": {},
+      "twoFactor": {
+        "primaryMethod": "phone",
+        "primaryValue": "+49 123456789",
+        "secondaryMethod": "email",
+        "secondaryValue": "john.doe@example.com"
+      },
+      "created": 1621354475,
+      "lastLogin": 1672418837,
+      "programs": {},
+      "dateOfBirth": 567043200,
+      "practices": {},
+      "devices": {
+        "2e731078-62c2-42df-9bc6-bea509f3d68a": {
+          "id": "2e731078-62c2-42df-9bc6-bea509f3d68a",
+          "nickname": "",
+          "sn": "B5610F25-2602-48D7-AC93-645DA308B5CC",
+          "type": 40066,
+          "uploadDate": 1621942320
+        },
+        "fbc207fe-27e5-4dec-b09b-c60d18167144": {
+          "id": "fbc207fe-27e5-4dec-b09b-c60d18167144",
+          "nickname": "",
+          "sn": "3D324B04-3BA9-460B-996E-18A2F3593458",
+          "type": 40068,
+          "uploadDate": 1672422460
+        },
+        "5ead323c-86a2-4304-b453-cc5229bb9e46": {
+          "id": "5ead323c-86a2-4304-b453-cc5229bb9e46",
+          "nickname": "",
+          "sn": "E357056E-8ADF-42E8-8566-FBBA15B80FCC",
+          "type": 40066,
+          "uploadDate": 1622327100
+        },
+        "f345c87e-f947-4632-80e4-c5cdaf12b6ce": {
+          "id": "f345c87e-f947-4632-80e4-c5cdaf12b6ce",
+          "nickname": "",
+          "sn": "9A434D88-658C-4EBD-A3B4-38D57CE408EB",
+          "type": 40066,
+          "uploadDate": 1631468460
+        },
+        "dbf9bd0e-b7e7-40a9-8e9e-a948937fa004": {
+          "id": "dbf9bd0e-b7e7-40a9-8e9e-a948937fa004",
+          "nickname": "",
+          "sn": "E503DFFB-4C04-41E5-ABA3-680244527947",
+          "type": 40066,
+          "uploadDate": 1621958640
+        },
+        "be80e09f-e254-47ee-bfe9-6586c1f859b0": {
+          "id": "be80e09f-e254-47ee-bfe9-6586c1f859b0",
+          "nickname": "",
+          "sn": "AE0DAEBC-2704-4B2D-8E15-32255F46D340",
+          "type": 40068,
+          "uploadDate": 0
+        }
+      },
+      "consents": {
+        "realWorldEvidence": {
+          "policyAccept": 1621620631,
+          "touAccept": 0,
+          "history": [
+            {
+              "policyAccept": 1621620631
+            }
+          ]
+        }
+      }
+    },
+    "messages": {
+      "unread": 0
+    },
+    "notifications": {
+      "unresolved": 0
+    },
+    "authTicket": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjdhZDY2YjQwLWJhOWItNDAxZS05ODQ1LTRmNDlmOTk4Y2YxNiIsImZpcnN0TmFtZSI6IkpvaG4iLCJsYXN0TmFtZSI6IkRvZSIsImNvdW50cnkiOiJERSIsInJlZ2lvbiI6ImRlIiwicm9sZSI6InBhdGllbnQiLCJ1bml0cyI6MSwicHJhY3RpY2VzIjpbXSwiYyI6MSwicyI6ImxsdS5pb3MiLCJleHAiOjE2ODc5NzA4ODl9.km_-IfDlE6sFpEj9VdsVFWhYdVg-EI0umvwPH9Bhu68",
+      "expires": 1687970889,
+      "duration": 15552000000
+    },
+    "invitations": null,
+    "trustedDeviceToken": ""
+  }
+}
