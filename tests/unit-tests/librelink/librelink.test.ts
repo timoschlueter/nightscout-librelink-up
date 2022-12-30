@@ -21,7 +21,6 @@ mock.onPost("https://api-eu.libreview.io/llu/auth/login").reply(200, loginSucces
 mock.onGet("https://api-eu.libreview.io/llu/connections").reply(200, connectionsResponse);
 mock.onGet("https://api-eu.libreview.io/llu/connections/7ad66b40-ba9b-401e-9845-4f49f998cf16/graph").reply(200, graphResponse);
 
-
 describe("LibreLink Up", () => {
     const env = process.env
 
@@ -36,10 +35,7 @@ describe("LibreLink Up", () => {
 
     it("Successful login to LibreLink Up", async () =>
     {
-        mock.onPost("https://api-eu.libreview.io/llu/auth/login").reply(200, loginSuccessResponse);
-
         const authTicket: AuthTicket | null = await login();
-
         expect(authTicket).not.toBeNull();
         expect(authTicket?.token).not.toBeNull();
         expect(authTicket?.expires).toBe(1687970889);
@@ -51,7 +47,6 @@ describe("LibreLink Up", () => {
         mock.onPost("https://api-eu.libreview.io/llu/auth/login").reply(200, loginFailedResponse);
 
         const authTicket: AuthTicket | null = await login();
-
         expect(authTicket).toBeNull();
     });
 
@@ -75,7 +70,7 @@ describe("LibreLink Up", () => {
         expect(connectionId).toBe("7ad66b40-ba9b-401e-9845-4f49f998cf16");
     });
 
-    it("Get glucose measurements for specific connection", async () =>
+    it("Get glucose measurements for a specific connection", async () =>
     {
         const glucoseMeasurements: GraphData | null = await getGlucoseMeasurements();
         expect(glucoseMeasurements?.connection.patientId).toBe("7ad66b40-ba9b-401e-9845-4f49f998cf16");

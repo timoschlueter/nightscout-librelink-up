@@ -312,7 +312,7 @@ export async function createFormattedMeasurements(measurementData: GraphData): P
     return formattedMeasurements;
 }
 
-export async function uploadToNightScout(measurementData: GraphData): Promise<void>
+async function uploadToNightScout(measurementData: GraphData): Promise<void>
 {
     const formattedMeasurements: Entry[] = await createFormattedMeasurements(measurementData);
 
@@ -378,7 +378,7 @@ function deleteAuthTicket(): void
     authTicket = {duration: 0, expires: 0, token: ""};
 }
 
-export function updateAuthTicket(newAuthTicket: AuthTicket): void
+function updateAuthTicket(newAuthTicket: AuthTicket): void
 {
     authTicket = newAuthTicket;
 }
