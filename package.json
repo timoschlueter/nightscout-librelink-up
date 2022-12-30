@@ -9,8 +9,8 @@
     "start-dev": "npx ts-node src/index.ts",
     "start-heroku": "node dist/index.js",
     "lint": "npx eslint . --fix",
-    "test": "SINGLE_SHOT=true jest --coverage",
-    "test:watch": "SINGLE_SHOT=true jest --watch"
+    "test": "jest --coverage --forceExit",
+    "test:watch": "jest --watch"
   },
   "repository": {
     "type": "git",
