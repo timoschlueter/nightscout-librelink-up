@@ -1,5 +1,4 @@
 FROM node:18
-LABEL version="2.0.1"
 LABEL description="Script written in TypeScript that uploads CGM readings from LibreLink Up to Nightscout"
 
 # Create app directory
@@ -12,5 +11,11 @@ RUN npm install
 
 # Bundle app source
 COPY . /usr/src/app
+
+# Run tests
+RUN npm run test
+
+RUN rm -r tests
+RUN rm -r coverage
 
 CMD [ "npm", "start" ]

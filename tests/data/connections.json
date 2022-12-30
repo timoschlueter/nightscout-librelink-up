@@ -1,0 +1,192 @@
+{
+  "status": 0,
+  "data": [
+    {
+      "id": "0714c937-0bc2-4be4-9e93-ddfe736b2b1f",
+      "patientId": "7ad66b40-ba9b-401e-9845-4f49f998cf16",
+      "country": "DE",
+      "status": 2,
+      "firstName": "John",
+      "lastName": "Doe",
+      "targetLow": 70,
+      "targetHigh": 160,
+      "uom": 1,
+      "sensor": {
+        "deviceId": "",
+        "sn": "ABCDEF1234",
+        "a": 1671955478,
+        "w": 60,
+        "pt": 4,
+        "s": true,
+        "lj": false
+      },
+      "alarmRules": {
+        "c": true,
+        "h": {
+          "th": 220,
+          "thmm": 12.2,
+          "d": 1440,
+          "f": 0.1
+        },
+        "f": {
+          "th": 55,
+          "thmm": 3,
+          "d": 30,
+          "tl": 10,
+          "tlmm": 0.6
+        },
+        "l": {
+          "th": 60,
+          "thmm": 3.3,
+          "d": 1440,
+          "tl": 10,
+          "tlmm": 0.6
+        },
+        "nd": {
+          "i": 20,
+          "r": 5,
+          "l": 6
+        },
+        "p": 5,
+        "r": 5,
+        "std": {}
+      },
+      "glucoseMeasurement": {
+        "FactoryTimestamp": "12/30/2022 4:47:40 PM",
+        "Timestamp": "12/30/2022 5:47:40 PM",
+        "type": 1,
+        "ValueInMgPerDl": 115,
+        "TrendArrow": 3,
+        "TrendMessage": null,
+        "MeasurementColor": 1,
+        "GlucoseUnits": 1,
+        "Value": 115,
+        "isHigh": false,
+        "isLow": false
+      },
+      "glucoseItem": {
+        "FactoryTimestamp": "12/30/2022 4:47:40 PM",
+        "Timestamp": "12/30/2022 5:47:40 PM",
+        "type": 1,
+        "ValueInMgPerDl": 115,
+        "TrendArrow": 3,
+        "TrendMessage": null,
+        "MeasurementColor": 1,
+        "GlucoseUnits": 1,
+        "Value": 115,
+        "isHigh": false,
+        "isLow": false
+      },
+      "glucoseAlarm": null,
+      "patientDevice": {
+        "did": "fbc207fe-27e5-4dec-b09b-c60d18167144",
+        "dtid": 40068,
+        "v": "3.4.1.7374",
+        "ll": 60,
+        "hl": 220,
+        "u": 1648155522,
+        "fixedLowAlarmValues": {
+          "mgdl": 60,
+          "mmoll": 3.3
+        },
+        "alarms": false,
+        "fixedLowThreshold": 0
+      },
+      "created": 1638703030
+    },
+    {
+      "id": "2f5f5f40-9899-11ec-bed5-0242ac110009",
+      "patientId": "77179667-ba4b-11eb-ad1f-0242ac110004",
+      "country": "DE",
+      "status": 2,
+      "firstName": "Jane",
+      "lastName": "Doe",
+      "targetLow": 70,
+      "targetHigh": 180,
+      "uom": 1,
+      "sensor": null,
+      "alarmRules": {
+        "c": true,
+        "h": {
+          "on": true,
+          "th": 210,
+          "thmm": 11.7,
+          "d": 1440,
+          "f": 0.1
+        },
+        "f": {
+          "th": 55,
+          "thmm": 3,
+          "d": 30,
+          "tl": 10,
+          "tlmm": 0.6
+        },
+        "l": {
+          "on": true,
+          "th": 70,
+          "thmm": 3.9,
+          "d": 1440,
+          "tl": 10,
+          "tlmm": 0.6
+        },
+        "nd": {
+          "i": 20,
+          "r": 5,
+          "l": 6
+        },
+        "p": 5,
+        "r": 5,
+        "std": {}
+      },
+      "glucoseMeasurement": {
+        "FactoryTimestamp": "3/13/2022 6:53:10 PM",
+        "Timestamp": "3/13/2022 7:53:10 PM",
+        "type": 1,
+        "ValueInMgPerDl": 103,
+        "TrendArrow": 3,
+        "TrendMessage": null,
+        "MeasurementColor": 1,
+        "GlucoseUnits": 1,
+        "Value": 103,
+        "isHigh": false,
+        "isLow": false
+      },
+      "glucoseItem": {
+        "FactoryTimestamp": "3/13/2022 6:53:10 PM",
+        "Timestamp": "3/13/2022 7:53:10 PM",
+        "type": 1,
+        "ValueInMgPerDl": 103,
+        "TrendArrow": 3,
+        "TrendMessage": null,
+        "MeasurementColor": 1,
+        "GlucoseUnits": 1,
+        "Value": 103,
+        "isHigh": false,
+        "isLow": false
+      },
+      "glucoseAlarm": null,
+      "patientDevice": {
+        "did": "b0f390e4-dc0f-45b4-bde3-5fd4be6f4051",
+        "dtid": 40068,
+        "v": "3.2.1.6005",
+        "l": true,
+        "ll": 70,
+        "h": true,
+        "hl": 210,
+        "u": 1633435443,
+        "fixedLowAlarmValues": {
+          "mgdl": 60,
+          "mmoll": 3.3
+        },
+        "alarms": false,
+        "fixedLowThreshold": 0
+      },
+      "created": 1646054423
+    }
+  ],
+  "ticket": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjdhZDY2YjQwLWJhOWItNDAxZS05ODQ1LTRmNDlmOTk4Y2YxNiIsImZpcnN0TmFtZSI6IkpvaG4iLCJsYXN0TmFtZSI6IkRvZSIsImNvdW50cnkiOiJERSIsInJlZ2lvbiI6ImRlIiwicm9sZSI6InBhdGllbnQiLCJ1bml0cyI6MSwicHJhY3RpY2VzIjpbXSwiYyI6MSwicyI6ImxsdS5pb3MiLCJleHAiOjE2ODc5NzA4ODl9.km_-IfDlE6sFpEj9VdsVFWhYdVg-EI0umvwPH9Bhu68",
+    "expires": 1687970889,
+    "duration": 15552000000
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "status": 2,
+  "error": {
+    "message": "notAuthenticated"
+  }
+}

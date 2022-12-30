@@ -56,7 +56,6 @@ const USER_AGENT = "FreeStyle LibreLink Up NightScout Uploader";
  */
 const LINK_UP_USERNAME = process.env.LINK_UP_USERNAME;
 const LINK_UP_PASSWORD = process.env.LINK_UP_PASSWORD;
-const LINK_UP_CONNECTION = process.env.LINK_UP_CONNECTION;
 
 /**
  * LibreLink Up API Settings (Don't change this unless you know what you are doing)
@@ -134,12 +133,26 @@ async function main(): Promise<void>
     {
         logger.info("renew token");
         deleteAuthTicket();
-        await login();
+        const authTicket: AuthTicket | null = await login();
+        if (!authTicket)
+        {
+            deleteAuthTicket();
+            return;
+        }
+        updateAuthTicket(authTicket);
     }
-    await getGlucoseMeasurements();
+
+    const glucoseGraphData: GraphData | null = await getGlucoseMeasurements();
+
+    if (!glucoseGraphData)
+    {
+        return;
+    }
+
+    await uploadToNightScout(glucoseGraphData);
 }
 
-async function login(): Promise<void>
+export async function login(): Promise<AuthTicket | null>
 {
     try
     {
@@ -157,26 +170,27 @@ async function login(): Promise<void>
         try
         {
             logger.info("Logged in to LibreLink Up");
-            updateAuthTicket(response.data.data.authTicket);
+            return response.data.data.authTicket;
         } catch (err)
         {
             logger.error("Invalid authentication token. Please check your LibreLink Up credentials", err);
+            return null;
         }
     } catch (error)
     {
         logger.error("Invalid credentials", error);
-        deleteAuthTicket();
+        return null;
     }
 }
 
-async function getGlucoseMeasurements(): Promise<void>
+export async function getGlucoseMeasurements(): Promise<GraphData | null>
 {
     try
     {
         const connectionId = await getLibreLinkUpConnection();
         if (!connectionId)
         {
-            return;
+            return null;
         }
 
         const url = "https://" + LIBRE_LINK_UP_URL + "/llu/connections/" + connectionId + "/graph"
@@ -186,15 +200,16 @@ async function getGlucoseMeasurements(): Promise<void>
                 headers: getLluAuthHeaders()
             });
 
-        await uploadToNightScout(response.data.data);
+        return response.data.data;
     } catch (error)
     {
         logger.error("Error getting glucose measurements", error);
         deleteAuthTicket();
+        return null;
     }
 }
 
-async function getLibreLinkUpConnection(): Promise<string | null>
+export async function getLibreLinkUpConnection(): Promise<string | null>
 {
     try
     {
@@ -222,14 +237,14 @@ async function getLibreLinkUpConnection(): Promise<string | null>
 
         dumpConnectionData(connectionData);
 
-        if (!LINK_UP_CONNECTION)
+        if (!process.env.LINK_UP_CONNECTION)
         {
             logger.warn("You did not specify a Patient-ID in the LINK_UP_CONNECTION environment variable.");
             logPickedUpConnection(connectionData[0]);
             return connectionData[0].patientId;
         }
 
-        const connection = connectionData.filter(connectionEntry => connectionEntry.patientId === LINK_UP_CONNECTION)[0];
+        const connection = connectionData.filter(connectionEntry => connectionEntry.patientId === process.env.LINK_UP_CONNECTION)[0];
         if (!connection)
         {
             logger.error("The specified Patient-ID was not found.");
@@ -262,13 +277,12 @@ async function lastEntryDate(): Promise<Date | null>
     return new Date(response.data.pop().dateString);
 }
 
-async function uploadToNightScout(measurementData: GraphData): Promise<void>
+export async function createFormattedMeasurements(measurementData: GraphData): Promise<Entry[]>
 {
+    const formattedMeasurements: Entry[] = [];
     const glucoseMeasurement = measurementData.connection.glucoseMeasurement;
     const measurementDate = getUtcDateFromString(glucoseMeasurement.FactoryTimestamp);
-
     const lastEntry = await lastEntryDate();
-    const formattedMeasurements: Entry[] = [];
 
     // Add the most recent measurement first
     if (lastEntry === null || measurementDate > lastEntry)
@@ -295,6 +309,12 @@ async function uploadToNightScout(measurementData: GraphData): Promise<void>
             });
         }
     });
+    return formattedMeasurements;
+}
+
+async function uploadToNightScout(measurementData: GraphData): Promise<void>
+{
+    const formattedMeasurements: Entry[] = await createFormattedMeasurements(measurementData);
 
     if (formattedMeasurements.length > 0)
     {
