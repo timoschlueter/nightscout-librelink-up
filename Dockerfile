@@ -1,5 +1,4 @@
 FROM node:18
-LABEL version="2.0.1"
 LABEL description="Script written in TypeScript that uploads CGM readings from LibreLink Up to Nightscout"
 
 # Create app directory
