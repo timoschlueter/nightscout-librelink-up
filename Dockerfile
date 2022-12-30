@@ -15,4 +15,7 @@ COPY . /usr/src/app
 # Run tests
 RUN npm run test
 
+RUN rm -r tests
+RUN rm -r coverage
+
 CMD [ "npm", "start" ]
