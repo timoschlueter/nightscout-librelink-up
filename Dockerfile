@@ -9,10 +9,10 @@ WORKDIR /usr/src/app
 COPY package.json /usr/src/app/
 RUN npm install
 
-# Run tests
-RUN npm run test
-
 # Bundle app source
 COPY . /usr/src/app
+
+# Run tests
+RUN npm run test
 
 CMD [ "npm", "start" ]
