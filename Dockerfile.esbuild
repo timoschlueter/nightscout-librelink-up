@@ -1,0 +1,33 @@
+FROM --platform=$BUILDPLATFORM node:18
+
+WORKDIR /usr/src/app
+
+COPY package*.json /usr/src/app/
+RUN npm install
+
+RUN npm install -g esbuild@0.17.14
+
+COPY . /usr/src/app
+
+RUN npm run test
+
+RUN esbuild \
+  --platform=node \
+  --bundle \
+  --sourcemap=linked \
+  --format=cjs \
+  src/index.ts \
+  --outfile=dist/main.bundle.js
+
+FROM --platform=$TARGETPLATFORM gcr.io/distroless/nodejs18-debian11:nonroot@sha256:79f33a961e3090d15e9319bf6247d0b0057e61245f87b26d106a62a8ec359aab
+
+WORKDIR /app
+
+COPY --from=0 \
+  /usr/src/app/dist/main.bundle.js \
+  /usr/src/app/dist/main.bundle.js.map \
+  ./
+
+# See https://github.com/nodejs/node/issues/41541
+# ENTRYPOINT [ "node", "--enable-source-maps", "./main.bundle.js" ]
+CMD [ "./main.bundle.js" ]

@@ -15,6 +15,7 @@ import {AuthTicket, Connection, GlucoseItem} from "./interfaces/librelink/common
 import {getUtcDateFromString, mapTrendArrow} from "./helpers/helpers";
 import {LibreLinkUpHttpHeaders, NightScoutHttpHeaders} from "./interfaces/http-headers";
 import {Entry} from "./interfaces/nightscout/entry";
+import {prometheusEndpointInit, prometheusExport} from "./prometheus/exporter";
 
 const {combine, timestamp, printf} = format;
 
@@ -125,6 +126,13 @@ else
     {
         main().then()
     }, {});
+
+    main().then();
+    prometheusEndpointInit({
+        port: parseInt(process.env.PROMETHEUS_PORT || "8080"),
+        logger,
+        endpoint: '/metrics',
+    });
 }
 
 async function main(): Promise<void>
@@ -149,7 +157,11 @@ async function main(): Promise<void>
         return;
     }
 
-    await uploadToNightScout(glucoseGraphData);
+    await prometheusExport(glucoseGraphData);
+
+    if (process.env.NIGHTSCOUT_API_TOKEN) {
+        await uploadToNightScout(glucoseGraphData);
+    }
 }
 
 export async function login(): Promise<AuthTicket | null>
