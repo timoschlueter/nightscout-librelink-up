@@ -93,6 +93,16 @@ services:
       LOG_LEVEL: "info"
 ```
 
+## Prometheus exporter
+
+Set the `PROMETHEUS_PORT` env to enable an http server with [Prometheus](https://prometheus.io/) endpoint at `/metrics`, for example
+
+```
+PROMETHEUS_PORT=8080
+```
+
+Combined with `SINGLE_SHOT` this instead writes a sample to a tmp file and prints the path.
+
 ## ToDo
 
 - **Integration into Nightscout**: I have not yet looked into the plugin architecture of Nightscout. Maybe this should

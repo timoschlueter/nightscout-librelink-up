@@ -15,6 +15,10 @@ import {AuthTicket, Connection, GlucoseItem} from "./interfaces/librelink/common
 import {getUtcDateFromString, mapTrendArrow} from "./helpers/helpers";
 import {LibreLinkUpHttpHeaders, NightScoutHttpHeaders} from "./interfaces/http-headers";
 import {Entry} from "./interfaces/nightscout/entry";
+import {prometheusEndpointInit, prometheusExport} from "./prometheus/exporter";
+
+const ENABLE_PROMETHEUS = !!process.env.PROMETHEUS_PORT;
+const ENABLE_NIGHTSCOUT = !!process.env.NIGHTSCOUT_API_TOKEN;
 
 const {combine, timestamp, printf} = format;
 
@@ -113,6 +117,9 @@ const nightScoutHttpHeaders: NightScoutHttpHeaders = {
     "Content-Type": "application/json",
 }
 
+logger.debug(`Nightscout is ${ENABLE_NIGHTSCOUT ? 'enabled' : 'disabled'}`);
+logger.debug(`Prometheus is ${ENABLE_PROMETHEUS ? 'enabled' : 'disabled'}`);
+
 if (process.env.SINGLE_SHOT === "true")
 {
     main().then();
@@ -125,6 +132,16 @@ else
     {
         main().then()
     }, {});
+
+    if (ENABLE_PROMETHEUS) {
+        // get a value as soon as possible to avoid exporting zeroes
+        main().then();
+        prometheusEndpointInit({
+            port: parseInt(process.env.PROMETHEUS_PORT || "8080"),
+            logger,
+            endpoint: '/metrics',
+        });
+    }
 }
 
 async function main(): Promise<void>
@@ -149,7 +166,13 @@ async function main(): Promise<void>
         return;
     }
 
-    await uploadToNightScout(glucoseGraphData);
+    if (ENABLE_PROMETHEUS) {
+        await prometheusExport(glucoseGraphData);
+    }
+
+    if (ENABLE_NIGHTSCOUT) {
+        await uploadToNightScout(glucoseGraphData);
+    }
 }
 
 export async function login(): Promise<AuthTicket | null>
