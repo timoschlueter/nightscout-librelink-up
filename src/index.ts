@@ -80,6 +80,7 @@ function getLibreLinkUpUrl(region: string): string
 const NIGHTSCOUT_URL = process.env.NIGHTSCOUT_URL;
 const NIGHTSCOUT_API_TOKEN = process.env.NIGHTSCOUT_API_TOKEN;
 const NIGHTSCOUT_DISABLE_HTTPS = process.env.NIGHTSCOUT_DISABLE_HTTPS || false;
+const NIGHTSCOUT_DEVICE_NAME = process.env.DEVICE_NAME || "nightscout-librelink-up";
 
 function getNightscoutUrl(): string
 {
@@ -301,6 +302,7 @@ export async function createFormattedMeasurements(measurementData: GraphData): P
     {
         formattedMeasurements.push({
             "type": "sgv",
+            "device": NIGHTSCOUT_DEVICE_NAME,
             "dateString": measurementDate.toISOString(),
             "date": measurementDate.getTime(),
             "direction": mapTrendArrow(glucoseMeasurement.TrendArrow),
@@ -315,6 +317,7 @@ export async function createFormattedMeasurements(measurementData: GraphData): P
         {
             formattedMeasurements.push({
                 "type": "sgv",
+                "device": NIGHTSCOUT_DEVICE_NAME,
                 "dateString": entryDate.toISOString(),
                 "date": entryDate.getTime(),
                 "sgv": glucoseMeasurementHistoryEntry.ValueInMgPerDl

@@ -10,4 +10,5 @@ export interface Entry
     date: number;
     direction?: string;
     sgv: number;
+    device: string;
 }
