@@ -136,6 +136,7 @@ async function main(): Promise<void>
         const authTicket: AuthTicket | null = await login();
         if (!authTicket)
         {
+            logger.error("LibreLink Up - No AuthTicket received. Please check your credentials.");
             deleteAuthTicket();
             return;
         }
@@ -169,6 +170,17 @@ export async function login(): Promise<AuthTicket | null>
 
         try
         {
+            if (response.data.status !== 0) {
+                logger.error(`LibreLink Up - Non-zero status code: ${JSON.stringify(response.data)}`)
+                return null;
+            }
+            if (response.data.data.redirect === true && response.data.data.region) {
+                const correctRegion = response.data.data.region.toUpperCase();
+                logger.error(
+                    `LibreLink Up - Logged in to the wrong region. Switch to '${correctRegion}' region.`
+                );
+                return null;
+            }
             logger.info("Logged in to LibreLink Up");
             return response.data.data.authTicket;
         } catch (err)
