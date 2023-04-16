@@ -21,6 +21,7 @@ The script takes the following environment variables
 | NIGHTSCOUT_URL           | Hostname of the Nightscout instance (without https://)                                                           | nightscout.yourdomain.com                | X        |
 | NIGHTSCOUT_API_TOKEN     | SHA1 Hash of Nightscout access token                                                                             | 162f14de46149447c3338a8286223de407e3b2fa | X        |
 | NIGHTSCOUT_DISABLE_HTTPS | Disables the HTTPS requirement for Nightscout URLs                                                               | true                                     |          |
+| NIGHTSCOUT_DEVICE_NAME   | Sets the device name used in Nightscout                                                                          | nightscout-librelink-up                  |          |
 | LOG_LEVEL                | The setting of verbosity for logging, should be one of info or debug                                             | info                                     |          |
 | SINGLE_SHOT              | Disables the scheduler and runs the script just once                                                             | true                                     |          |
 
@@ -65,6 +66,7 @@ The easiest way to use this is to use the latest docker image:
 docker run -e LINK_UP_USERNAME="mail@example.com" \
            -e LINK_UP_PASSWORD="mypassword" \
            -e LINK_UP_TIME_INTERVAL="5" \
+           -e LINK_UP_REGION="EU" \
            -e NIGHTSCOUT_URL="nightscout.yourdomain.com" \
            -e NIGHTSCOUT_API_TOKEN="librelinku-123456789abcde" \
            -e LOG_LEVEL="info" \

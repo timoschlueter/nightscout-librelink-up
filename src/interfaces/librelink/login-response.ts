@@ -116,6 +116,8 @@ interface LoginData
     authTicket: AuthTicket;
     invitations?: unknown;
     trustedDeviceToken: string;
+    redirect?: boolean;
+    region?: string;
 }
 
 export interface LoginResponse

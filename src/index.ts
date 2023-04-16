@@ -80,6 +80,7 @@ function getLibreLinkUpUrl(region: string): string
 const NIGHTSCOUT_URL = process.env.NIGHTSCOUT_URL;
 const NIGHTSCOUT_API_TOKEN = process.env.NIGHTSCOUT_API_TOKEN;
 const NIGHTSCOUT_DISABLE_HTTPS = process.env.NIGHTSCOUT_DISABLE_HTTPS || false;
+const NIGHTSCOUT_DEVICE_NAME = process.env.DEVICE_NAME || "nightscout-librelink-up";
 
 function getNightscoutUrl(): string
 {
@@ -136,6 +137,7 @@ async function main(): Promise<void>
         const authTicket: AuthTicket | null = await login();
         if (!authTicket)
         {
+            logger.error("LibreLink Up - No AuthTicket received. Please check your credentials.");
             deleteAuthTicket();
             return;
         }
@@ -169,6 +171,17 @@ export async function login(): Promise<AuthTicket | null>
 
         try
         {
+            if (response.data.status !== 0) {
+                logger.error(`LibreLink Up - Non-zero status code: ${JSON.stringify(response.data)}`)
+                return null;
+            }
+            if (response.data.data.redirect === true && response.data.data.region) {
+                const correctRegion = response.data.data.region.toUpperCase();
+                logger.error(
+                    `LibreLink Up - Logged in to the wrong region. Switch to '${correctRegion}' region.`
+                );
+                return null;
+            }
             logger.info("Logged in to LibreLink Up");
             return response.data.data.authTicket;
         } catch (err)
@@ -289,6 +302,7 @@ export async function createFormattedMeasurements(measurementData: GraphData): P
     {
         formattedMeasurements.push({
             "type": "sgv",
+            "device": NIGHTSCOUT_DEVICE_NAME,
             "dateString": measurementDate.toISOString(),
             "date": measurementDate.getTime(),
             "direction": mapTrendArrow(glucoseMeasurement.TrendArrow),
@@ -303,6 +317,7 @@ export async function createFormattedMeasurements(measurementData: GraphData): P
         {
             formattedMeasurements.push({
                 "type": "sgv",
+                "device": NIGHTSCOUT_DEVICE_NAME,
                 "dateString": entryDate.toISOString(),
                 "date": entryDate.getTime(),
                 "sgv": glucoseMeasurementHistoryEntry.ValueInMgPerDl
