@@ -60,7 +60,7 @@ const LINK_UP_PASSWORD = process.env.LINK_UP_PASSWORD;
 /**
  * LibreLink Up API Settings (Don't change this unless you know what you are doing)
  */
-const LIBRE_LINK_UP_VERSION = "4.2.2";
+const LIBRE_LINK_UP_VERSION = "4.7.0";
 const LIBRE_LINK_UP_PRODUCT = "llu.ios";
 const LINK_UP_REGION = process.env.LINK_UP_REGION || "EU";
 const LIBRE_LINK_UP_URL = getLibreLinkUpUrl(LINK_UP_REGION);
