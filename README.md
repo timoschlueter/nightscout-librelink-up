@@ -11,19 +11,19 @@ work with at least Freestyle Libre 2 (FGM) and Libre 3 CGM sensors.
 
 The script takes the following environment variables
 
-| Variable                 | Description                                                                                                      | Example                                  | Required |
-|--------------------------|------------------------------------------------------------------------------------------------------------------|------------------------------------------|----------|
-| LINK_UP_USERNAME         | LibreLink Up Login Email                                                                                         | mail@example.com                         | X        |
-| LINK_UP_PASSWORD         | LibreLink Up Login Password                                                                                      | mypassword                               | X        |
-| LINK_UP_CONNECTION       | LibreLink Up Patient-ID. Can be received from the console output if multiple connections are available.          | 123456abc-abcd-efgh-7891def              |          |
-| LINK_UP_TIME_INTERVAL    | The time interval of requesting values from libre link up                                                        | 5                                        |          |
-| LINK_UP_REGION           | Your region. Used to determine the correct LibreLinkUp service (Possible values: US, EU, DE, FR, JP, AP, AU, AE) | EU                                       |          |
-| NIGHTSCOUT_URL           | Hostname of the Nightscout instance (without https://)                                                           | nightscout.yourdomain.com                | X        |
-| NIGHTSCOUT_API_TOKEN     | SHA1 Hash of Nightscout access token                                                                             | 162f14de46149447c3338a8286223de407e3b2fa | X        |
-| NIGHTSCOUT_DISABLE_HTTPS | Disables the HTTPS requirement for Nightscout URLs                                                               | true                                     |          |
-| NIGHTSCOUT_DEVICE_NAME   | Sets the device name used in Nightscout                                                                          | nightscout-librelink-up                  |          |
-| LOG_LEVEL                | The setting of verbosity for logging, should be one of info or debug                                             | info                                     |          |
-| SINGLE_SHOT              | Disables the scheduler and runs the script just once                                                             | true                                     |          |
+| Variable                 | Description                                                                                                                | Example                                  | Required |
+|--------------------------|----------------------------------------------------------------------------------------------------------------------------|------------------------------------------|----------|
+| LINK_UP_USERNAME         | LibreLink Up Login Email                                                                                                   | mail@example.com                         | X        |
+| LINK_UP_PASSWORD         | LibreLink Up Login Password                                                                                                | mypassword                               | X        |
+| LINK_UP_CONNECTION       | LibreLink Up Patient-ID. Can be received from the console output if multiple connections are available.                    | 123456abc-abcd-efgh-7891def              |          |
+| LINK_UP_TIME_INTERVAL    | The time interval of requesting values from libre link up                                                                  | 5                                        |          |
+| LINK_UP_REGION           | Your region. Used to determine the correct LibreLinkUp service (Possible values: AE, AP, AU, CA, DE, EU2, EU2, FR, JP, US) | EU                                       |          |
+| NIGHTSCOUT_URL           | Hostname of the Nightscout instance (without https://)                                                                     | nightscout.yourdomain.com                | X        |
+| NIGHTSCOUT_API_TOKEN     | SHA1 Hash of Nightscout access token                                                                                       | 162f14de46149447c3338a8286223de407e3b2fa | X        |
+| NIGHTSCOUT_DISABLE_HTTPS | Disables the HTTPS requirement for Nightscout URLs                                                                         | true                                     |          |
+| NIGHTSCOUT_DEVICE_NAME   | Sets the device name used in Nightscout                                                                                    | nightscout-librelink-up                  |          |
+| LOG_LEVEL                | The setting of verbosity for logging, should be one of info or debug                                                       | info                                     |          |
+| SINGLE_SHOT              | Disables the scheduler and runs the script just once                                                                       | true                                     |          |
 
 ## Usage
 
