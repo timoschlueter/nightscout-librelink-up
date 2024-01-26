@@ -10,6 +10,3 @@ export interface LibreLinkUpHttpHeaders extends OutgoingHttpHeaders {
     "product": string,
 }
 
-export interface NightScoutHttpHeaders extends OutgoingHttpHeaders {
-    "api-secret": string | undefined,
-}

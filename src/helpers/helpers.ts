@@ -3,25 +3,23 @@
  *
  * SPDX-License-Identifier: MIT
  */
-import {NIGHTSCOUT_TREND_ARROWS} from "../constants/nightscout-trend-arrows";
+import { Direction } from "../nightscout/interface";
 
-export function mapTrendArrow(libreTrendArrowRaw: number): string
-{
-    switch (libreTrendArrowRaw)
-    {
-        case 1:
-            return NIGHTSCOUT_TREND_ARROWS.singleDown
-        case 2:
-            return NIGHTSCOUT_TREND_ARROWS.fortyFiveDown
-        case 3:
-            return NIGHTSCOUT_TREND_ARROWS.flat
-        case 4:
-            return NIGHTSCOUT_TREND_ARROWS.fortyFiveUp
-        case 5:
-            return NIGHTSCOUT_TREND_ARROWS.singleUp
-        default:
-            return NIGHTSCOUT_TREND_ARROWS.notComputable
-    }
+export function mapTrendArrow(libreTrendArrowRaw: number): Direction {
+	switch (libreTrendArrowRaw) {
+		case 1:
+			return Direction.SingleDown;
+		case 2:
+			return Direction.FortyFiveDown;
+		case 3:
+			return Direction.Flat;
+		case 4:
+			return Direction.FortyFiveUp;
+		case 5:
+			return Direction.SingleUp;
+		default:
+			return Direction.NotComputable;
+	}
 }
 
 export function getUtcDateFromString(timeStamp: string): Date
