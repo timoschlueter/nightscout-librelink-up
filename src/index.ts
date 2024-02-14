@@ -329,7 +329,13 @@ export async function createFormattedMeasurements(measurementData: GraphData): P
 
 async function uploadToNightScout(measurementData: GraphData): Promise<void>
 {
-    const formattedMeasurements: Entry[] = await createFormattedMeasurements(measurementData);
+    let formattedMeasurements: Entry[] = [];
+
+    try {
+        formattedMeasurements = await createFormattedMeasurements(measurementData);
+    } catch (err) {
+        logger.error('Error formatting data');
+    }
 
     if (formattedMeasurements.length > 0)
     {
