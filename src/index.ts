@@ -13,8 +13,13 @@ import {ConnectionsResponse} from "./interfaces/librelink/connections-response";
 import {GraphData, GraphResponse} from "./interfaces/librelink/graph-response";
 import {AuthTicket, Connection, GlucoseItem} from "./interfaces/librelink/common";
 import {getUtcDateFromString, mapTrendArrow} from "./helpers/helpers";
-import {LibreLinkUpHttpHeaders, NightScoutHttpHeaders} from "./interfaces/http-headers";
-import {Entry} from "./interfaces/nightscout/entry";
+import {LibreLinkUpHttpHeaders} from "./interfaces/http-headers";
+import {Client as ClientV1} from "./nightscout/apiv1";
+import {Client as ClientV3} from "./nightscout/apiv3";
+import {Entry} from "./nightscout/interface";
+import readConfig from "./config";
+
+const config = readConfig();
 
 const {combine, timestamp, printf} = format;
 
@@ -75,23 +80,6 @@ function getLibreLinkUpUrl(region: string): string
 }
 
 /**
- * NightScout API
- */
-const NIGHTSCOUT_URL = process.env.NIGHTSCOUT_URL;
-const NIGHTSCOUT_API_TOKEN = process.env.NIGHTSCOUT_API_TOKEN;
-const NIGHTSCOUT_DISABLE_HTTPS = process.env.NIGHTSCOUT_DISABLE_HTTPS || false;
-const NIGHTSCOUT_DEVICE_NAME = process.env.DEVICE_NAME || "nightscout-librelink-up";
-
-function getNightscoutUrl(): string
-{
-    if (NIGHTSCOUT_DISABLE_HTTPS === "true")
-    {
-        return "http://" + NIGHTSCOUT_URL;
-    }
-    return "https://" + NIGHTSCOUT_URL;
-}
-
-/**
  * last known authTicket
  */
 let authTicket: AuthTicket = {duration: 0, expires: 0, token: ""};
@@ -106,12 +94,6 @@ const libreLinkUpHttpHeaders: LibreLinkUpHttpHeaders = {
     "Pragma": "no-cache",
     "Cache-Control": "no-cache",
     "Authorization": undefined
-}
-
-const nightScoutHttpHeaders: NightScoutHttpHeaders = {
-    "api-secret": NIGHTSCOUT_API_TOKEN,
-    "User-Agent": USER_AGENT,
-    "Content-Type": "application/json",
 }
 
 if (process.env.SINGLE_SHOT === "true")
@@ -274,53 +256,31 @@ export async function getLibreLinkUpConnection(): Promise<string | null>
     }
 }
 
-async function lastEntryDate(): Promise<Date | null>
-{
-    const url = getNightscoutUrl() + "/api/v1/entries?count=1"
-    const response = await axios.get(
-        url,
-        {
-            headers: nightScoutHttpHeaders
-        });
+const nightscoutClient = config.nightscoutApiV3
+	? new ClientV3(config)
+	: new ClientV1(config);
 
-    if (!response.data || response.data.length === 0)
-    {
-        return null;
-    }
-    return new Date(response.data.pop().dateString);
-}
-
-export async function createFormattedMeasurements(measurementData: GraphData): Promise<Entry[]>
-{
+export async function createFormattedMeasurements(measurementData: GraphData): Promise<Entry[]> {
     const formattedMeasurements: Entry[] = [];
     const glucoseMeasurement = measurementData.connection.glucoseMeasurement;
     const measurementDate = getUtcDateFromString(glucoseMeasurement.FactoryTimestamp);
-    const lastEntry = await lastEntryDate();
+    const lastEntry = await nightscoutClient.lastEntry();
 
     // Add the most recent measurement first
-    if (lastEntry === null || measurementDate > lastEntry)
-    {
+    if (lastEntry === null || measurementDate > lastEntry.date) {
         formattedMeasurements.push({
-            "type": "sgv",
-            "device": NIGHTSCOUT_DEVICE_NAME,
-            "dateString": measurementDate.toISOString(),
-            "date": measurementDate.getTime(),
-            "direction": mapTrendArrow(glucoseMeasurement.TrendArrow),
-            "sgv": glucoseMeasurement.ValueInMgPerDl
+            date: measurementDate,
+            direction: mapTrendArrow(glucoseMeasurement.TrendArrow),
+            sgv: glucoseMeasurement.ValueInMgPerDl
         });
     }
 
-    measurementData.graphData.forEach((glucoseMeasurementHistoryEntry: GlucoseItem) =>
-    {
+    measurementData.graphData.forEach((glucoseMeasurementHistoryEntry: GlucoseItem) => {
         const entryDate = getUtcDateFromString(glucoseMeasurementHistoryEntry.FactoryTimestamp);
-        if (lastEntry === null ||entryDate > lastEntry)
-        {
+        if (lastEntry === null || entryDate > lastEntry.date) {
             formattedMeasurements.push({
-                "type": "sgv",
-                "device": NIGHTSCOUT_DEVICE_NAME,
-                "dateString": entryDate.toISOString(),
-                "date": entryDate.getTime(),
-                "sgv": glucoseMeasurementHistoryEntry.ValueInMgPerDl
+                date: entryDate,
+                sgv: glucoseMeasurementHistoryEntry.ValueInMgPerDl,
             });
         }
     });
@@ -336,21 +296,8 @@ async function uploadToNightScout(measurementData: GraphData): Promise<void>
         logger.info("Trying to upload " + formattedMeasurements.length + " glucose measurement items to Nightscout");
         try
         {
-            const url = getNightscoutUrl() + "/api/v1/entries"
-            const response = await axios.post(
-                url,
-                formattedMeasurements,
-                {
-                    headers: nightScoutHttpHeaders
-                });
-            if (response.status !== 200)
-            {
-                logger.error("Upload to NightScout failed ", response.statusText);
-            }
-            else
-            {
-                logger.info("Upload of " + formattedMeasurements.length + " measurements to Nightscout succeeded");
-            }
+            await nightscoutClient.uploadEntries(formattedMeasurements);
+            logger.info("Upload of " + formattedMeasurements.length + " measurements to Nightscout succeeded");
         } catch (error)
         {
             logger.error("Upload to NightScout failed ", error);
