@@ -7,12 +7,13 @@ import {
 } from "../../../src";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
+
 const mock = new MockAdapter(axios);
-import { default as loginSuccessResponse } from "../../data/login.json";
-import { default as loginFailedResponse } from "../../data/login-failed.json";
-import { default as connectionsResponse } from "../../data/connections.json";
-import { default as entriesResponse } from "../../data/entries.json";
-import { default as graphResponse } from "../../data/graph.json";
+import {default as loginSuccessResponse} from "../../data/login.json";
+import {default as loginFailedResponse} from "../../data/login-failed.json";
+import {default as connectionsResponse} from "../../data/connections.json";
+import {default as entriesResponse} from "../../data/entries.json";
+import {default as graphResponse} from "../../data/graph.json";
 import {AuthTicket} from "../../../src/interfaces/librelink/common";
 import {GraphData} from "../../../src/interfaces/librelink/graph-response";
 import {Entry} from "../../../src/nightscout/interface";
@@ -20,16 +21,20 @@ import {Entry} from "../../../src/nightscout/interface";
 mock.onPost("https://api-eu.libreview.io/llu/auth/login").reply(200, loginSuccessResponse);
 mock.onGet("https://api-eu.libreview.io/llu/connections").reply(200, connectionsResponse);
 mock.onGet("https://api-eu.libreview.io/llu/connections/7ad66b40-ba9b-401e-9845-4f49f998cf16/graph").reply(200, graphResponse);
+mock.onGet("http://localhost:1337/api/v1/entries?count=1").reply(200, []);
 
-describe("LibreLink Up", () => {
+describe("LibreLink Up", () =>
+{
     const env = process.env
 
-    beforeEach(() => {
+    beforeEach(() =>
+    {
         jest.resetModules()
-        process.env = { ...env }
+        process.env = {...env}
     })
 
-    afterEach(() => {
+    afterEach(() =>
+    {
         process.env = env
     })
 
@@ -89,11 +94,11 @@ describe("LibreLink Up", () => {
         const formattedMeasurements: Entry[] = await createFormattedMeasurements(glucoseMeasurements);
         expect(formattedMeasurements.length).toBe(142);
 
-        expect(formattedMeasurements[0].date).toBe(1672418860000);
+        expect(formattedMeasurements[0].date.getTime()).toBe(1672418860000);
         expect(formattedMeasurements[0].direction).toBe("Flat");
         expect(formattedMeasurements[0].sgv).toBe(115);
 
-        expect(formattedMeasurements[1].date).toBe(1672375840000);
+        expect(formattedMeasurements[1].date.getTime()).toBe(1672375840000);
         expect(formattedMeasurements[1]).not.toHaveProperty("direction");
         expect(formattedMeasurements[1].sgv).toBe(173);
     });
@@ -110,11 +115,11 @@ describe("LibreLink Up", () => {
         const formattedMeasurements: Entry[] = await createFormattedMeasurements(glucoseMeasurements);
         expect(formattedMeasurements.length).toBe(112);
 
-        expect(formattedMeasurements[0].date).toBe(1672418860000);
+        expect(formattedMeasurements[0].date.getTime()).toBe(1672418860000);
         expect(formattedMeasurements[0].direction).toBe("Flat");
         expect(formattedMeasurements[0].sgv).toBe(115);
 
-        expect(formattedMeasurements[1].date).toBe(1672384839000);
+        expect(formattedMeasurements[1].date.getTime()).toBe(1672384839000);
         expect(formattedMeasurements[1]).not.toHaveProperty("direction");
         expect(formattedMeasurements[1].sgv).toBe(177);
     });

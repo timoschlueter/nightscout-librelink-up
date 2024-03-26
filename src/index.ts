@@ -294,11 +294,11 @@ async function uploadToNightScout(measurementData: GraphData): Promise<void>
     if (formattedMeasurements.length > 0)
     {
         logger.info("Trying to upload " + formattedMeasurements.length + " glucose measurement items to Nightscout");
-        try 
+        try
         {
             await nightscoutClient.uploadEntries(formattedMeasurements);
             logger.info("Upload of " + formattedMeasurements.length + " measurements to Nightscout succeeded");
-        } catch (error) 
+        } catch (error)
         {
             logger.error("Upload to NightScout failed ", error);
         }
