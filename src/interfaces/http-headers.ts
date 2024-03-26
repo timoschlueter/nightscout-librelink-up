@@ -3,9 +3,10 @@
  *
  * SPDX-License-Identifier: MIT
  */
-import {OutgoingHttpHeaders} from "http";
+import {RawAxiosRequestHeaders} from "axios";
 
-export interface LibreLinkUpHttpHeaders extends OutgoingHttpHeaders {
+export interface LibreLinkUpHttpHeaders extends RawAxiosRequestHeaders
+{
     "version": string,
     "product": string,
 }

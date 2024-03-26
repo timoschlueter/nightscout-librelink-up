@@ -1,8 +1,7 @@
 import {Entry, NightscoutAPI, NightscoutConfig} from "./interface";
-import {OutgoingHttpHeaders} from "http";
-import axios from "axios";
+import axios, {RawAxiosRequestHeaders} from "axios";
 
-interface NightscoutHttpHeaders extends OutgoingHttpHeaders
+interface NightscoutHttpHeaders extends RawAxiosRequestHeaders
 {
     "api-secret": string | undefined;
 }
