@@ -172,10 +172,6 @@ export async function login(): Promise<AuthTicket | null>
                 withCredentials: true, // Enable automatic cookie handling
             });
 
-            // Log cookies after a request
-            console.log(await cookieJar.getCookies(url));
-
-
         try
         {
             if (response.data.status !== 0) {
@@ -222,9 +218,6 @@ export async function getGlucoseMeasurements(): Promise<GraphData | null>
                 withCredentials: true, // Enable automatic cookie handling
             });
 
-            // Log cookies after a request
-            console.log(await cookieJar.getCookies(url));
-
         return response.data.data;
     } catch (error)
     {
@@ -246,9 +239,6 @@ export async function getLibreLinkUpConnection(): Promise<string | null>
                 jar: cookieJar, // Attach the cookie jar
                 withCredentials: true, // Enable automatic cookie handling
             });
-
-            // Log cookies after a request
-            console.log(await cookieJar.getCookies(url));
 
         const connectionData = response.data.data;
 
