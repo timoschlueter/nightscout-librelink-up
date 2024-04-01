@@ -18,6 +18,14 @@ import {Client as ClientV1} from "./nightscout/apiv1";
 import {Client as ClientV3} from "./nightscout/apiv3";
 import {Entry} from "./nightscout/interface";
 import readConfig from "./config";
+import { wrapper as axiosCookieJarSupport } from 'axios-cookiejar-support';
+import { CookieJar } from 'tough-cookie';
+
+// Enable cookiejar support for Axios
+axiosCookieJarSupport(axios);
+
+// Create a new cookie jar instance
+const cookieJar = new CookieJar();
 
 const config = readConfig();
 
@@ -54,7 +62,7 @@ axios.interceptors.response.use(response =>
     return error;
 });
 
-const USER_AGENT = "FreeStyle LibreLink Up NightScout Uploader";
+const USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Mobile/15E148 Safari/604.1";
 
 /**
  * LibreLink Up Credentials
@@ -86,14 +94,25 @@ let authTicket: AuthTicket = {duration: 0, expires: 0, token: ""};
 
 const libreLinkUpHttpHeaders: LibreLinkUpHttpHeaders = {
     "User-Agent": USER_AGENT,
-    "Content-Type": "application/json",
+    "Content-Type": "application/json;charset=UTF-8",
     "version": LIBRE_LINK_UP_VERSION,
     "product": LIBRE_LINK_UP_PRODUCT,
     "Accept-Encoding": "gzip, deflate, br",
     "Connection": "keep-alive",
     "Pragma": "no-cache",
     "Cache-Control": "no-cache",
-    "Authorization": undefined
+    "Authorization": undefined,
+    "accept": "application/json, text/plain, */*",
+    "accept-language": "en-US,en;q=0.9",
+    "newyu-lv-web-version": "3.16.19",
+    "origin": "https://www.libreview.com",
+    "referer": "https://www.libreview.com/",
+    "sec-ch-ua": "'Google Chrome';v='123', 'Not:A-Brand';v='8', 'Chromium';v='123'",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "'macOS'",
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "cross-site"
 }
 
 if (process.env.SINGLE_SHOT === "true")
@@ -148,7 +167,9 @@ export async function login(): Promise<AuthTicket | null>
                 password: LINK_UP_PASSWORD,
             },
             {
-                headers: libreLinkUpHttpHeaders
+                headers: libreLinkUpHttpHeaders,
+                jar: cookieJar, // Attach the cookie jar
+                withCredentials: true, // Enable automatic cookie handling
             });
 
         try
@@ -192,7 +213,9 @@ export async function getGlucoseMeasurements(): Promise<GraphData | null>
         const response: {data: GraphResponse} = await axios.get(
             url,
             {
-                headers: getLluAuthHeaders()
+                headers: getLluAuthHeaders(),
+                jar: cookieJar, // Attach the cookie jar
+                withCredentials: true, // Enable automatic cookie handling
             });
 
         return response.data.data;
@@ -212,7 +235,9 @@ export async function getLibreLinkUpConnection(): Promise<string | null>
         const response: {data: ConnectionsResponse} = await axios.get(
             url,
             {
-                headers: getLluAuthHeaders()
+                headers: getLluAuthHeaders(),
+                jar: cookieJar, // Attach the cookie jar
+                withCredentials: true, // Enable automatic cookie handling
             });
 
         const connectionData = response.data.data;
