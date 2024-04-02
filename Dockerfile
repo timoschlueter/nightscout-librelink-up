@@ -1,4 +1,4 @@
-FROM node:18-bullseye
+FROM node:20-bookworm
 LABEL description="Script written in TypeScript that uploads CGM readings from LibreLink Up to Nightscout"
 
 # Create app directory
