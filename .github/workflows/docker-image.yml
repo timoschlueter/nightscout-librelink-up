@@ -9,36 +9,30 @@ jobs:
   main:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      -
-        name: Login to Docker Hub
-        uses: docker/login-action@v2
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
-      -
-        name: Docker Build and Push (Dev)
+      - name: Docker Build and Push (Dev)
         id: docker_build_dev
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v5
         with:
           push: true
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           tags: timoschlueter/nightscout-librelink-up:dev
-      -
-        name: Docker Build and Push (Tagged)
+      - name: Docker Build and Push (Tagged)
         if: startsWith(github.ref, 'refs/tags/')
         id: docker_build_tagged
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v5
         with:
           push: true
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           tags: timoschlueter/nightscout-librelink-up:${{github.ref_name}},timoschlueter/nightscout-librelink-up:latest
-      -
-        name: Docker Image digest
+      - name: Docker Image digest
         if: startsWith(github.ref, 'refs/tags/')
         run: echo ${{ steps.docker_build.outputs.digest }}
