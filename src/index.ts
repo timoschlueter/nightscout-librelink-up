@@ -23,6 +23,7 @@ import {HttpCookieAgent} from "http-cookie-agent/http";
 import {Agent as HttpAgent} from "node:http";
 import {Agent as HttpsAgent} from "node:https";
 import * as crypto from "crypto";
+import { isNativeError } from "node:util/types";
 
 // Generate new Cyphers for stealth mode in order to bypass SSL fingerprinting used by Cloudflare.
 // The new Cyphers are then used in the HTTPS Agent for Axios.
@@ -51,41 +52,34 @@ const logger = createLogger({
         logFormat
     ),
     transports: [
-        new transports.Console({level: process.env.LOG_LEVEL || "info"}),
+        new transports.Console({level: config.logLevel}),
     ]
 });
 
-axios.interceptors.response.use(response =>
-{
-    return response;
-}, error =>
-{
-    if (error.response)
+axios.interceptors.response.use(
+    response => response, 
+    error =>
     {
-        logger.error(JSON.stringify(error.response.data));
+        if (error.response)
+        {
+            logger.error(JSON.stringify(error.response.data));
+        }
+        else
+        {
+            logger.error(error.message);
+        }
+        return error;
     }
-    else
-    {
-        logger.error(error.message);
-    }
-    return error;
-});
+);
 
 const USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Mobile/15E148 Safari/604.1";
-
-/**
- * LibreLink Up Credentials
- */
-const LINK_UP_USERNAME = process.env.LINK_UP_USERNAME;
-const LINK_UP_PASSWORD = process.env.LINK_UP_PASSWORD;
 
 /**
  * LibreLink Up API Settings (Don't change this unless you know what you are doing)
  */
 const LIBRE_LINK_UP_VERSION = "4.7.0";
 const LIBRE_LINK_UP_PRODUCT = "llu.ios";
-const LINK_UP_REGION = process.env.LINK_UP_REGION || "EU";
-const LIBRE_LINK_UP_URL = getLibreLinkUpUrl(LINK_UP_REGION);
+const LIBRE_LINK_UP_URL = getLibreLinkUpUrl(config.linkUpRegion);
 
 function getLibreLinkUpUrl(region: string): string
 {
@@ -108,13 +102,13 @@ const libreLinkUpHttpHeaders: LibreLinkUpHttpHeaders = {
     "product": LIBRE_LINK_UP_PRODUCT
 }
 
-if (process.env.SINGLE_SHOT === "true")
+if (config.singleShot)
 {
     main().then();
 }
 else
 {
-    const schedule = "*/" + (process.env.LINK_UP_TIME_INTERVAL || 5) + " * * * *";
+    const schedule = `*/${config.linkUpTimeInterval} * * * *`;
     logger.info("Starting cron schedule: " + schedule)
     cron.schedule(schedule, () =>
     {
@@ -156,8 +150,8 @@ export async function login(): Promise<AuthTicket | null>
         const response: { data: LoginResponse } = await axios.post(
             url,
             {
-                email: LINK_UP_USERNAME,
-                password: LINK_UP_PASSWORD,
+                email: config.linkUpUsername,
+                password: config.linkUpPassword,
             },
             {
                 headers: libreLinkUpHttpHeaders,
@@ -255,14 +249,14 @@ export async function getLibreLinkUpConnection(): Promise<string | null>
 
         dumpConnectionData(connectionData);
 
-        if (!process.env.LINK_UP_CONNECTION)
+        if (!config.linkUpConnection)
         {
             logger.warn("You did not specify a Patient-ID in the LINK_UP_CONNECTION environment variable.");
             logPickedUpConnection(connectionData[0]);
             return connectionData[0].patientId;
         }
 
-        const connection = connectionData.filter(connectionEntry => connectionEntry.patientId === process.env.LINK_UP_CONNECTION)[0];
+        const connection = connectionData.filter(connectionEntry => connectionEntry.patientId === config.linkUpConnection)[0];
         if (!connection)
         {
             logger.error("The specified Patient-ID was not found.");
