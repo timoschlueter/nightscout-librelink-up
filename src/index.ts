@@ -23,7 +23,6 @@ import {HttpCookieAgent} from "http-cookie-agent/http";
 import {Agent as HttpAgent} from "node:http";
 import {Agent as HttpsAgent} from "node:https";
 import * as crypto from "crypto";
-import { isNativeError } from "node:util/types";
 
 // Generate new Cyphers for stealth mode in order to bypass SSL fingerprinting used by Cloudflare.
 // The new Cyphers are then used in the HTTPS Agent for Axios.
@@ -79,16 +78,7 @@ const USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_5_1 like Mac OS X) App
  */
 const LIBRE_LINK_UP_VERSION = "4.7.0";
 const LIBRE_LINK_UP_PRODUCT = "llu.ios";
-const LIBRE_LINK_UP_URL = getLibreLinkUpUrl(config.linkUpRegion);
-
-function getLibreLinkUpUrl(region: string): string
-{
-    if (LLU_API_ENDPOINTS.hasOwnProperty(region))
-    {
-        return LLU_API_ENDPOINTS[region];
-    }
-    return LLU_API_ENDPOINTS.EU;
-}
+const LIBRE_LINK_UP_URL = LLU_API_ENDPOINTS[config.linkUpRegion];
 
 /**
  * last known authTicket
@@ -140,7 +130,7 @@ async function main(): Promise<void>
     }
 
     await uploadToNightScout(glucoseGraphData);
-}
+    }
 
 export async function login(): Promise<AuthTicket | null>
 {
@@ -311,7 +301,7 @@ export async function createFormattedMeasurements(measurementData: GraphData): P
 async function uploadToNightScout(measurementData: GraphData): Promise<void>
 {
     const formattedMeasurements: Entry[] = await createFormattedMeasurements(measurementData);
-
+    
     if (formattedMeasurements.length > 0)
     {
         logger.info("Trying to upload " + formattedMeasurements.length + " glucose measurement items to Nightscout");
