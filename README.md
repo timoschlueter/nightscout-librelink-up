@@ -34,7 +34,7 @@ There are different options for using this script.
 - Click on [![Deploy](https://www.herokucdn.com/deploy/button.svg)][heroku]
 - Login to Heroku if not already happened
 - Provide proper values for the `environment variables`
-- **Important: make sure that yor Nightscout API token is hashed with SHA1**
+- **Important: make sure that yor Nightscout API token is [hashed with SHA1](#hashing-api-token)**
 - Click `Deploy` to deploy the app
 
 ### Variant 2: Local
@@ -93,6 +93,22 @@ services:
       NIGHTSCOUT_URL: "nightscout.yourdomain.com"
       NIGHTSCOUT_API_TOKEN: "librelinku-123456789abcde"
       LOG_LEVEL: "info"
+```
+
+### Hashing API token
+
+`NIGHTSCOUT_API_TOKEN` must be a SHA1 hash of an Access Token from Nightscout (_Add new subject_ first in Nightscout's _Admin Tools_ if required), e.g. your Access Token for a subject named _LibreLinkUp_ might be `librelinku-123456789abcde`.
+
+Obtain your hash with
+
+```shell
+echo -n "librelinku-123456789abcde" | sha1sum | cut -d ' ' -f 1
+```
+(use `shasum` instead of `sha1sum` on Mac)
+
+which will print the hash (40 characters in length):
+```
+14c779d01a34ad1337ab59c2168e31b141eb2de6
 ```
 
 ## ToDo
