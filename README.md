@@ -111,6 +111,8 @@ which will print the hash (40 characters in length):
 14c779d01a34ad1337ab59c2168e31b141eb2de6
 ```
 
+You might also use an online tool to generate your hash, e.g. https://codebeautify.org/sha1-hash-generator
+
 ## ToDo
 
 - **Integration into Nightscout**: I have not yet looked into the plugin architecture of Nightscout. Maybe this should
