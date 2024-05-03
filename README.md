@@ -68,7 +68,7 @@ docker run -e LINK_UP_USERNAME="mail@example.com" \
            -e LINK_UP_TIME_INTERVAL="5" \
            -e LINK_UP_REGION="EU" \
            -e NIGHTSCOUT_URL="nightscout.yourdomain.com" \
-           -e NIGHTSCOUT_API_TOKEN="librelinku-123456789abcde" \
+           -e NIGHTSCOUT_API_TOKEN=$(echo -n "foo-bar-baz" | sha1sum | cut -d ' ' -f 1) \
            -e LOG_LEVEL="info" \
            timoschlueter/nightscout-librelink-up
 ```
@@ -91,7 +91,7 @@ services:
       LINK_UP_TIME_INTERVAL: "5"
       LINK_UP_REGION: "DE"
       NIGHTSCOUT_URL: "nightscout.yourdomain.com"
-      NIGHTSCOUT_API_TOKEN: "librelinku-123456789abcde"
+      NIGHTSCOUT_API_TOKEN: "14c779d01a34ad1337ab59c2168e31b141eb2de6"
       LOG_LEVEL: "info"
 ```
 
