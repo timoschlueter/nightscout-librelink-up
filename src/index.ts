@@ -42,7 +42,7 @@ const stealthHttpsAgent: HttpsAgent = new HttpsAgent({
 const jar: CookieJar = new CookieJar();
 const cookieAgent: HttpAgent = new HttpCookieAgent({cookies: {jar}})
 
-const config = readConfig();
+let config = readConfig();
 
 const {combine, timestamp, printf} = format;
 
@@ -62,7 +62,7 @@ const logger = createLogger({
 });
 
 axios.interceptors.response.use(
-    response => response, 
+    response => response,
     error =>
     {
         if (error.response)
@@ -136,10 +136,12 @@ async function main(): Promise<void>
     }
 
     await uploadToNightScout(glucoseGraphData);
-    }
+}
 
 export async function login(): Promise<AuthTicket | null>
 {
+    config = readConfig()
+    
     try
     {
         const url = "https://" + LIBRE_LINK_UP_URL + "/llu/auth/login"
@@ -187,6 +189,8 @@ export async function login(): Promise<AuthTicket | null>
 
 export async function getGlucoseMeasurements(): Promise<GraphData | null>
 {
+    config = readConfig()
+
     try
     {
         const connectionId = await getLibreLinkUpConnection();
@@ -216,6 +220,8 @@ export async function getGlucoseMeasurements(): Promise<GraphData | null>
 
 export async function getLibreLinkUpConnection(): Promise<string | null>
 {
+    config = readConfig()
+
     try
     {
         const url = "https://" + LIBRE_LINK_UP_URL + "/llu/connections"
@@ -253,6 +259,7 @@ export async function getLibreLinkUpConnection(): Promise<string | null>
         }
 
         const connection = connectionData.filter(connectionEntry => connectionEntry.patientId === config.linkUpConnection)[0];
+
         if (!connection)
         {
             logger.error("The specified Patient-ID was not found.");
@@ -307,7 +314,7 @@ export async function createFormattedMeasurements(measurementData: GraphData): P
 async function uploadToNightScout(measurementData: GraphData): Promise<void>
 {
     const formattedMeasurements: Entry[] = await createFormattedMeasurements(measurementData);
-    
+
     if (formattedMeasurements.length > 0)
     {
         logger.info("Trying to upload " + formattedMeasurements.length + " glucose measurement items to Nightscout");

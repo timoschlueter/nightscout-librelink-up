@@ -1,14 +1,7 @@
 import "jest";
-import {
-    createFormattedMeasurements,
-    getGlucoseMeasurements,
-    getLibreLinkUpConnection,
-    login,
-} from "../../../src";
+import {createFormattedMeasurements, getGlucoseMeasurements, getLibreLinkUpConnection, login,} from "../../../src";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
-
-const mock = new MockAdapter(axios);
 import {default as loginSuccessResponse} from "../../data/login.json";
 import {default as loginFailedResponse} from "../../data/login-failed.json";
 import {default as connectionsResponse} from "../../data/connections.json";
@@ -17,6 +10,9 @@ import {default as graphResponse} from "../../data/graph.json";
 import {AuthTicket} from "../../../src/interfaces/librelink/common";
 import {GraphData} from "../../../src/interfaces/librelink/graph-response";
 import {Entry} from "../../../src/nightscout/interface";
+import readConfig from "../../../src/config";
+
+const mock = new MockAdapter(axios);
 
 mock.onPost("https://api-eu.libreview.io/llu/auth/login").reply(200, loginSuccessResponse);
 mock.onGet("https://api-eu.libreview.io/llu/connections").reply(200, connectionsResponse);
@@ -64,6 +60,7 @@ describe("LibreLink Up", () =>
     it("Get available connections - Second available patient-id", async () =>
     {
         process.env.LINK_UP_CONNECTION = "77179667-ba4b-11eb-ad1f-0242ac110004";
+        const config = readConfig();
         const connectionId: string | null = await getLibreLinkUpConnection();
         expect(connectionId).toBe("77179667-ba4b-11eb-ad1f-0242ac110004");
     });
