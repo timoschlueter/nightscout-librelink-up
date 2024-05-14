@@ -24,19 +24,25 @@ import {Agent as HttpAgent} from "node:http";
 import {Agent as HttpsAgent} from "node:https";
 import * as crypto from "crypto";
 
-// Generate new Cyphers for stealth mode in order to bypass SSL fingerprinting used by Cloudflare.
-// The new Cyphers are then used in the HTTPS Agent for Axios.
-const defaultCyphers: Array<string> = crypto.constants.defaultCipherList.split(":");
-const stealthCyphers: Array<string> = defaultCyphers.slice(0, 3);
+// Generate new Ciphers for stealth mode in order to bypass SSL fingerprinting used by Cloudflare.
+// The new Ciphers are then used in the HTTPS Agent for Axios.
+const defaultCiphers: Array<string> = crypto.constants.defaultCipherList.split(":");
+const stealthCiphers: Array<string> = [
+    defaultCiphers[0],
+    defaultCiphers[2],
+    defaultCiphers[1],
+    ...defaultCiphers.slice(3)
+];
+
 const stealthHttpsAgent: HttpsAgent = new HttpsAgent({
-    ciphers: stealthCyphers.join(":")
+    ciphers: stealthCiphers.join(":")
 });
 
 // Create a new CookieJar and HttpCookieAgent for Axios to handle cookies.
 const jar: CookieJar = new CookieJar();
 const cookieAgent: HttpAgent = new HttpCookieAgent({cookies: {jar}})
 
-const config = readConfig();
+let config = readConfig();
 
 const {combine, timestamp, printf} = format;
 
@@ -51,50 +57,34 @@ const logger = createLogger({
         logFormat
     ),
     transports: [
-        new transports.Console({level: process.env.LOG_LEVEL || "info"}),
+        new transports.Console({level: config.logLevel}),
     ]
 });
 
-axios.interceptors.response.use(response =>
-{
-    return response;
-}, error =>
-{
-    if (error.response)
+axios.interceptors.response.use(
+    response => response,
+    error =>
     {
-        logger.error(JSON.stringify(error.response.data));
+        if (error.response)
+        {
+            logger.error(JSON.stringify(error.response.data));
+        }
+        else
+        {
+            logger.error(error.message);
+        }
+        return error;
     }
-    else
-    {
-        logger.error(error.message);
-    }
-    return error;
-});
+);
 
-const USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Mobile/15E148 Safari/604.1";
-
-/**
- * LibreLink Up Credentials
- */
-const LINK_UP_USERNAME = process.env.LINK_UP_USERNAME;
-const LINK_UP_PASSWORD = process.env.LINK_UP_PASSWORD;
+const USER_AGENT = "Mozilla/5.0 (iPhone; CPU OS 17_4.1 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/17.4.1 Mobile/10A5355d Safari/8536.25";
 
 /**
  * LibreLink Up API Settings (Don't change this unless you know what you are doing)
  */
-const LIBRE_LINK_UP_VERSION = "4.7.0";
+const LIBRE_LINK_UP_VERSION = "4.10.0";
 const LIBRE_LINK_UP_PRODUCT = "llu.ios";
-const LINK_UP_REGION = process.env.LINK_UP_REGION || "EU";
-const LIBRE_LINK_UP_URL = getLibreLinkUpUrl(LINK_UP_REGION);
-
-function getLibreLinkUpUrl(region: string): string
-{
-    if (LLU_API_ENDPOINTS.hasOwnProperty(region))
-    {
-        return LLU_API_ENDPOINTS[region];
-    }
-    return LLU_API_ENDPOINTS.EU;
-}
+const LIBRE_LINK_UP_URL = LLU_API_ENDPOINTS[config.linkUpRegion];
 
 /**
  * last known authTicket
@@ -108,13 +98,13 @@ const libreLinkUpHttpHeaders: LibreLinkUpHttpHeaders = {
     "product": LIBRE_LINK_UP_PRODUCT
 }
 
-if (process.env.SINGLE_SHOT === "true")
+if (config.singleShot)
 {
     main().then();
 }
 else
 {
-    const schedule = "*/" + (process.env.LINK_UP_TIME_INTERVAL || 5) + " * * * *";
+    const schedule = `*/${config.linkUpTimeInterval} * * * *`;
     logger.info("Starting cron schedule: " + schedule)
     cron.schedule(schedule, () =>
     {
@@ -150,14 +140,16 @@ async function main(): Promise<void>
 
 export async function login(): Promise<AuthTicket | null>
 {
+    config = readConfig()
+    
     try
     {
         const url = "https://" + LIBRE_LINK_UP_URL + "/llu/auth/login"
         const response: { data: LoginResponse } = await axios.post(
             url,
             {
-                email: LINK_UP_USERNAME,
-                password: LINK_UP_PASSWORD,
+                email: config.linkUpUsername,
+                password: config.linkUpPassword,
             },
             {
                 headers: libreLinkUpHttpHeaders,
@@ -165,7 +157,7 @@ export async function login(): Promise<AuthTicket | null>
                 httpAgent: cookieAgent,
                 httpsAgent: stealthHttpsAgent
             });
-        
+
         try
         {
             if (response.data.status !== 0)
@@ -197,6 +189,8 @@ export async function login(): Promise<AuthTicket | null>
 
 export async function getGlucoseMeasurements(): Promise<GraphData | null>
 {
+    config = readConfig()
+
     try
     {
         const connectionId = await getLibreLinkUpConnection();
@@ -226,6 +220,8 @@ export async function getGlucoseMeasurements(): Promise<GraphData | null>
 
 export async function getLibreLinkUpConnection(): Promise<string | null>
 {
+    config = readConfig()
+
     try
     {
         const url = "https://" + LIBRE_LINK_UP_URL + "/llu/connections"
@@ -255,14 +251,15 @@ export async function getLibreLinkUpConnection(): Promise<string | null>
 
         dumpConnectionData(connectionData);
 
-        if (!process.env.LINK_UP_CONNECTION)
+        if (!config.linkUpConnection)
         {
             logger.warn("You did not specify a Patient-ID in the LINK_UP_CONNECTION environment variable.");
             logPickedUpConnection(connectionData[0]);
             return connectionData[0].patientId;
         }
 
-        const connection = connectionData.filter(connectionEntry => connectionEntry.patientId === process.env.LINK_UP_CONNECTION)[0];
+        const connection = connectionData.filter(connectionEntry => connectionEntry.patientId === config.linkUpConnection)[0];
+
         if (!connection)
         {
             logger.error("The specified Patient-ID was not found.");
