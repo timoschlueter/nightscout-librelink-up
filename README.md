@@ -24,6 +24,7 @@ The script takes the following environment variables
 | NIGHTSCOUT_DEVICE_NAME   | Sets the device name used in Nightscout                                                                                    | nightscout-librelink-up                  |          |
 | LOG_LEVEL                | The setting of verbosity for logging, should be one of info or debug                                                       | info                                     |          |
 | SINGLE_SHOT              | Disables the scheduler and runs the script just once                                                                       | true                                     |          |
+| ALL_DATA                 | Upload all available data from LibreLink Up instead of just data newer than last upload. LibreLinkUp sometimes lags behind in reporting recent historical data, so it is advised to run the script with ALL_DATA set to true at least once a day.                         | true                                     |          |
 
 ## Usage
 
