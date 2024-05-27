@@ -24,6 +24,7 @@ The script takes the following environment variables
 | NIGHTSCOUT_DEVICE_NAME   | Sets the device name used in Nightscout                                                                                    | nightscout-librelink-up                  |          |
 | LOG_LEVEL                | The setting of verbosity for logging, should be one of info or debug                                                       | info                                     |          |
 | SINGLE_SHOT              | Disables the scheduler and runs the script just once                                                                       | true                                     |          |
+| ALL_DATA                 | Upload all available data from LibreLink Up instead of just data newer than last upload. LibreLinkUp sometimes lags behind in reporting recent historical data, so it is advised to run the script with ALL_DATA set to true at least once a day.                         | true                                     |          |
 
 ## Usage
 
@@ -34,7 +35,7 @@ There are different options for using this script.
 - Click on [![Deploy](https://www.herokucdn.com/deploy/button.svg)][heroku]
 - Login to Heroku if not already happened
 - Provide proper values for the `environment variables`
-- **Important: make sure that yor Nightscout API token is hashed with SHA1**
+- **Important: make sure that yor Nightscout API token is [hashed with SHA1](#hashing-api-token)**
 - Click `Deploy` to deploy the app
 
 ### Variant 2: Local
@@ -50,7 +51,7 @@ export LINK_UP_PASSWORD="mypassword"
 export LINK_UP_TIME_INTERVAL="5"
 export NIGHTSCOUT_URL="nightscout.yourdomain.com"
 # use `shasum` instead of `sha1sum` on Mac
-export NIGHTSCOUT_API_TOKEN=$(echo -n "foo-bar-baz" | sha1sum | cut -d ' ' -f 1)
+export NIGHTSCOUT_API_TOKEN=$(echo -n "librelinku-123456789abcde" | sha1sum | cut -d ' ' -f 1)
 export LOG_LEVEL="info"
 
 npm start
@@ -68,7 +69,7 @@ docker run -e LINK_UP_USERNAME="mail@example.com" \
            -e LINK_UP_TIME_INTERVAL="5" \
            -e LINK_UP_REGION="EU" \
            -e NIGHTSCOUT_URL="nightscout.yourdomain.com" \
-           -e NIGHTSCOUT_API_TOKEN="librelinku-123456789abcde" \
+           -e NIGHTSCOUT_API_TOKEN=$(echo -n "librelinku-123456789abcde" | sha1sum | cut -d ' ' -f 1) \
            -e LOG_LEVEL="info" \
            timoschlueter/nightscout-librelink-up
 ```
@@ -91,9 +92,27 @@ services:
       LINK_UP_TIME_INTERVAL: "5"
       LINK_UP_REGION: "DE"
       NIGHTSCOUT_URL: "nightscout.yourdomain.com"
-      NIGHTSCOUT_API_TOKEN: "librelinku-123456789abcde"
+      NIGHTSCOUT_API_TOKEN: "14c779d01a34ad1337ab59c2168e31b141eb2de6"
       LOG_LEVEL: "info"
 ```
+
+### Hashing API token
+
+`NIGHTSCOUT_API_TOKEN` must be a SHA1 hash of an Access Token from Nightscout (_Add new subject_ first in Nightscout's _Admin Tools_ if required), e.g. your Access Token for a subject named _LibreLinkUp_ might be `librelinku-123456789abcde`.
+
+Obtain your hash with
+
+```shell
+echo -n "librelinku-123456789abcde" | sha1sum | cut -d ' ' -f 1
+```
+(use `shasum` instead of `sha1sum` on Mac)
+
+which will print the hash (40 characters in length):
+```
+14c779d01a34ad1337ab59c2168e31b141eb2de6
+```
+
+You might also use an online tool to generate your hash, e.g. https://codebeautify.org/sha1-hash-generator
 
 ## ToDo
 
