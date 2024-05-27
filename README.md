@@ -51,7 +51,7 @@ export LINK_UP_PASSWORD="mypassword"
 export LINK_UP_TIME_INTERVAL="5"
 export NIGHTSCOUT_URL="nightscout.yourdomain.com"
 # use `shasum` instead of `sha1sum` on Mac
-export NIGHTSCOUT_API_TOKEN=$(echo -n "foo-bar-baz" | sha1sum | cut -d ' ' -f 1)
+export NIGHTSCOUT_API_TOKEN=$(echo -n "librelinku-123456789abcde" | sha1sum | cut -d ' ' -f 1)
 export LOG_LEVEL="info"
 
 npm start
@@ -69,7 +69,7 @@ docker run -e LINK_UP_USERNAME="mail@example.com" \
            -e LINK_UP_TIME_INTERVAL="5" \
            -e LINK_UP_REGION="EU" \
            -e NIGHTSCOUT_URL="nightscout.yourdomain.com" \
-           -e NIGHTSCOUT_API_TOKEN=$(echo -n "foo-bar-baz" | sha1sum | cut -d ' ' -f 1) \
+           -e NIGHTSCOUT_API_TOKEN=$(echo -n "librelinku-123456789abcde" | sha1sum | cut -d ' ' -f 1) \
            -e LOG_LEVEL="info" \
            timoschlueter/nightscout-librelink-up
 ```
