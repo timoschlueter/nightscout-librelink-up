@@ -98,7 +98,11 @@ const libreLinkUpHttpHeaders: LibreLinkUpHttpHeaders = {
     "product": LIBRE_LINK_UP_PRODUCT
 }
 
-if (config.singleShot)
+if (config.libreviewCSV != "")
+{
+    uploadLibreviewCSV(config.libreviewCSV).then();
+}
+else if (config.singleShot)
 {
     main().then();
 }
@@ -110,6 +114,35 @@ else
     {
         main().then()
     }, {});
+}
+
+async function uploadLibreviewCSV(filename : string): Promise<void>
+{
+    const fs = require("fs");
+    const { parse } = require("csv-parse");
+
+    const formattedMeasurements: Entry[] = [];
+
+
+    fs.createReadStream(filename)
+	.pipe(parse({ delimiter: ",", from_line: 3 }))
+	.on("data", function (row) {
+	    if (row[3] == "0" || row[3] == "1") {
+		const parts = row[2].split(/\D/);
+		const datestring = parts[2] + "-" + parts[1] + "-" + parts[0] + "T" + parts[3] + ":" + parts[4] + ":00.000" + config.libreviewTZ;
+		formattedMeasurements.push({
+                    date: new Date(datestring),
+                    sgv: +row[4]
+		});
+	    }
+	})
+	.on("end", async function () {
+	    console.log(formattedMeasurements);
+	    await performUploadToNightScout(formattedMeasurements);
+	})
+	.on("error", function (error) {
+	    console.log(error.message);
+	});
 }
 
 async function main(): Promise<void>
@@ -310,10 +343,7 @@ export async function createFormattedMeasurements(measurementData: GraphData): P
     return formattedMeasurements;
 }
 
-async function uploadToNightScout(measurementData: GraphData): Promise<void>
-{
-    const formattedMeasurements: Entry[] = await createFormattedMeasurements(measurementData);
-
+async function performUploadToNightScout(formattedMeasurements : Entry []) : Promise<void> {
     if (formattedMeasurements.length > 0)
     {
         logger.info("Trying to upload " + formattedMeasurements.length + " glucose measurement items to Nightscout");
@@ -330,6 +360,12 @@ async function uploadToNightScout(measurementData: GraphData): Promise<void>
     {
         logger.info("No new measurements to upload");
     }
+}
+
+async function uploadToNightScout(measurementData: GraphData): Promise<void>
+{
+    const formattedMeasurements: Entry[] = await createFormattedMeasurements(measurementData);
+    await performUploadToNightScout(formattedMeasurements);
 }
 
 function dumpConnectionData(connectionData: Connection[]): void

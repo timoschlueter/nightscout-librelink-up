@@ -13,8 +13,8 @@ The script takes the following environment variables
 
 | Variable                 | Description                                                                                                                | Example                                  | Required |
 |--------------------------|----------------------------------------------------------------------------------------------------------------------------|------------------------------------------|----------|
-| LINK_UP_USERNAME         | LibreLink Up Login Email                                                                                                   | mail@example.com                         | X        |
-| LINK_UP_PASSWORD         | LibreLink Up Login Password                                                                                                | mypassword                               | X        |
+| LINK_UP_USERNAME         | LibreLink Up Login Email                                                                                                   | mail@example.com                         | unless LIBREVIEW_CSV is set        |
+| LINK_UP_PASSWORD         | LibreLink Up Login Password                                                                                                | mypassword                               | unless LIBREVIEW_CSV is set        |
 | LINK_UP_CONNECTION       | LibreLink Up Patient-ID. Can be received from the console output if multiple connections are available.                    | 123456abc-abcd-efgh-7891def              |          |
 | LINK_UP_TIME_INTERVAL    | The time interval of requesting values from libre link up                                                                  | 5                                        |          |
 | LINK_UP_REGION           | Your region. Used to determine the correct LibreLinkUp service (Possible values: AE, AP, AU, CA, DE, EU2, EU2, FR, JP, US) | EU                                       |          |
@@ -25,6 +25,8 @@ The script takes the following environment variables
 | LOG_LEVEL                | The setting of verbosity for logging, should be one of info or debug                                                       | info                                     |          |
 | SINGLE_SHOT              | Disables the scheduler and runs the script just once                                                                       | true                                     |          |
 | ALL_DATA                 | Upload all available data from LibreLink Up instead of just data newer than last upload. LibreLinkUp sometimes lags behind in reporting recent historical data, so it is advised to run the script with ALL_DATA set to true at least once a day.                         | true                                     |          |
+| LIBREVIEW_CSV            | Do not connect to LibreLink Up but upload data from named csv file as downloaded from LibreView to Nightscout.             | JaneDoe_glucose_dd-myyyy.csv             |          |
+| LIBREVIEW_TZ             | Time zone used in the time stamp column (column 3) of the csv file                                                         | +02:00 (for CEST)                        | if LIBREVIEW_CSV is set            |
 
 ## Usage
 
