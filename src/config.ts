@@ -10,6 +10,12 @@ function readConfig()
             'NIGHTSCOUT_API_TOKEN',
             'NIGHTSCOUT_URL',
         ];
+	if (process.env.LIBREVIEW_CSV) {
+	    requiredEnvs.push("LIBREVIEW_TZ");
+	} else {
+	    requiredEnvs.push("LINK_UP_USERNAME");
+	    requiredEnvs.push("LINK_UP_PASSWORD");
+	}	    
     }
 
     for (let envName of requiredEnvs)

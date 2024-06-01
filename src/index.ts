@@ -98,7 +98,7 @@ const libreLinkUpHttpHeaders: LibreLinkUpHttpHeaders = {
     "product": LIBRE_LINK_UP_PRODUCT
 }
 
-if (config.libreviewCSV != "")
+if (config.libreviewCSV)
 {
     uploadLibreviewCSV(config.libreviewCSV).then();
 }
