@@ -1,6 +1,6 @@
 {
   "name": "nightscout-librelink-up",
-  "version": "2.6.1",
+  "version": "2.7.0",
   "description": "Script written in TypeScript that uploads CGM readings from LibreLink Up to Nightscout",
   "main": "dist/index.js",
   "scripts": {
@@ -35,7 +35,7 @@
   },
   "homepage": "https://github.com/timoschlueter/nightscout-librelink-up#readme",
   "dependencies": {
-    "axios": "~1.6.8",
+    "axios": "~1.7.2",
     "axios-mock-adapter": "~1.22.0",
     "http-cookie-agent": "~6.0.1",
     "node-cron": "~3.0.3",
@@ -45,15 +45,15 @@
   "devDependencies": {
     "@tsconfig/node20": "~20.1.4",
     "@types/jest": "~29.5.12",
-    "@types/node": "~20.12.2",
+    "@types/node": "~20.14.9",
     "@types/node-cron": "~3.0.11",
     "@types/tough-cookie": "~4.0.5",
-    "@typescript-eslint/eslint-plugin": "~7.5.0",
-    "@typescript-eslint/parser": "~7.5.0",
+    "@typescript-eslint/eslint-plugin": "~7.14.1",
+    "@typescript-eslint/parser": "~7.14.1",
     "eslint": "~8.57.0",
     "jest": "~29.7.0",
     "ts-jest": "~29.1.2",
     "ts-node": "~10.9.2",
-    "typescript": "~5.4.3"
+    "typescript": "~5.5.2"
   }
 }
