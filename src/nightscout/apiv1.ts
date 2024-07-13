@@ -56,7 +56,7 @@ export class Client implements NightscoutAPI
 
         if (resp.status !== 200)
         {
-            throw Error(`failed to post new entries: ${resp.statusText}`);
+            throw Error(`failed to post new entries: ${resp.statusText} ${resp.status}`);
         }
 
         return;
