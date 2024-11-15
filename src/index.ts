@@ -82,7 +82,7 @@ const USER_AGENT = "Mozilla/5.0 (iPhone; CPU OS 17_4.1 like Mac OS X) AppleWebKi
 /**
  * LibreLink Up API Settings (Don't change this unless you know what you are doing)
  */
-const LIBRE_LINK_UP_VERSION = "4.10.0";
+const LIBRE_LINK_UP_VERSION = "4.12.0";
 const LIBRE_LINK_UP_PRODUCT = "llu.ios";
 const LIBRE_LINK_UP_URL = LLU_API_ENDPOINTS[config.linkUpRegion];
 
