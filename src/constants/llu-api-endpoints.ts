@@ -14,4 +14,5 @@ export const LLU_API_ENDPOINTS: LluApiEndpoints = {
     JP: "api-jp.libreview.io",
     US: "api-us.libreview.io",
     LA: "api-la.libreview.io",
+    RU: "api.libreview.ru",
 } as const;
