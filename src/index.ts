@@ -23,6 +23,8 @@ import {HttpCookieAgent} from "http-cookie-agent/http";
 import {Agent as HttpAgent} from "node:http";
 import {Agent as HttpsAgent} from "node:https";
 import * as crypto from "crypto";
+import {jwtDecode} from "jwt-decode";
+import {Jwt} from "./interfaces/librelink/jwt";
 
 // Generate new Ciphers for stealth mode in order to bypass SSL fingerprinting used by Cloudflare.
 // The new Ciphers are then used in the HTTPS Agent for Axios.
@@ -95,7 +97,8 @@ const libreLinkUpHttpHeaders: LibreLinkUpHttpHeaders = {
     "User-Agent": USER_AGENT,
     "Content-Type": "application/json;charset=UTF-8",
     "version": LIBRE_LINK_UP_VERSION,
-    "product": LIBRE_LINK_UP_PRODUCT
+    "product": LIBRE_LINK_UP_PRODUCT,
+    "account-id": "",
 }
 
 if (config.singleShot)
@@ -141,7 +144,7 @@ async function main(): Promise<void>
 export async function login(): Promise<AuthTicket | null>
 {
     config = readConfig()
-    
+
     try
     {
         const url = "https://" + LIBRE_LINK_UP_URL + "/llu/auth/login"
@@ -353,6 +356,19 @@ function getLluAuthHeaders(): LibreLinkUpHttpHeaders
 {
     const authenticatedHttpHeaders = libreLinkUpHttpHeaders;
     authenticatedHttpHeaders.Authorization = "Bearer " + getAuthenticationToken();
+
+    if (authTicket)
+    {
+        try
+        {
+            let jwt: Jwt = jwtDecode(authTicket.token);
+            let hashedAccountId: string = crypto.createHash("sha256").update(jwt.id).digest("hex");
+            authenticatedHttpHeaders["account-id"] = hashedAccountId;
+        } catch (error)
+        {
+            logger.error("Error getting accountId: ", error);
+        }
+    }
     logger.debug("authenticatedHttpHeaders: " + JSON.stringify(authenticatedHttpHeaders));
     return authenticatedHttpHeaders;
 }
