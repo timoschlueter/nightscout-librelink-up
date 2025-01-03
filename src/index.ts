@@ -23,8 +23,6 @@ import {HttpCookieAgent} from "http-cookie-agent/http";
 import {Agent as HttpAgent} from "node:http";
 import {Agent as HttpsAgent} from "node:https";
 import * as crypto from "crypto";
-import {jwtDecode} from "jwt-decode";
-import {Jwt} from "./interfaces/librelink/jwt";
 
 // Generate new Ciphers for stealth mode in order to bypass SSL fingerprinting used by Cloudflare.
 // The new Ciphers are then used in the HTTPS Agent for Axios.
@@ -92,6 +90,7 @@ const LIBRE_LINK_UP_URL = LLU_API_ENDPOINTS[config.linkUpRegion];
  * last known authTicket
  */
 let authTicket: AuthTicket = {duration: 0, expires: 0, token: ""};
+let userId: string = "";
 
 const libreLinkUpHttpHeaders: LibreLinkUpHttpHeaders = {
     "User-Agent": USER_AGENT,
@@ -121,11 +120,13 @@ async function main(): Promise<void>
     {
         logger.info("renew token");
         deleteAuthTicket();
+        deleteAccountId();
         const authTicket: AuthTicket | null = await login();
         if (!authTicket)
         {
             logger.error("LibreLink Up - No AuthTicket received. Please check your credentials.");
             deleteAuthTicket();
+            deleteAccountId();
             return;
         }
         updateAuthTicket(authTicket);
@@ -177,6 +178,7 @@ export async function login(): Promise<AuthTicket | null>
                 return null;
             }
             logger.info("Logged in to LibreLink Up");
+            updateAccountId(response.data.data.user.id);
             return response.data.data.authTicket;
         } catch (err)
         {
@@ -217,6 +219,7 @@ export async function getGlucoseMeasurements(): Promise<GraphData | null>
     {
         logger.error("Error getting glucose measurements", error);
         deleteAuthTicket();
+        deleteAccountId();
         return null;
     }
 }
@@ -275,6 +278,7 @@ export async function getLibreLinkUpConnection(): Promise<string | null>
     {
         logger.error("getting libreLinkUpConnection: ", error);
         deleteAuthTicket();
+        deleteAccountId();
         return null;
     }
 }
@@ -361,9 +365,8 @@ function getLluAuthHeaders(): LibreLinkUpHttpHeaders
     {
         try
         {
-            let jwt: Jwt = jwtDecode(authTicket.token);
-            let hashedAccountId: string = crypto.createHash("sha256").update(jwt.id).digest("hex");
-            authenticatedHttpHeaders["account-id"] = hashedAccountId;
+            // Add SHA-256 hashed account-id to the headers
+            authenticatedHttpHeaders["account-id"] = crypto.createHash("sha256").update(getUserId()).digest("hex");
         } catch (error)
         {
             logger.error("Error getting accountId: ", error);
@@ -381,6 +384,21 @@ function deleteAuthTicket(): void
 function updateAuthTicket(newAuthTicket: AuthTicket): void
 {
     authTicket = newAuthTicket;
+}
+
+function deleteAccountId(): void
+{
+    userId = "";
+}
+
+function updateAccountId(newUserId: string): void
+{
+    userId = newUserId;
+}
+
+function getUserId(): string
+{
+    return userId;
 }
 
 function getAuthenticationToken(): string | null
