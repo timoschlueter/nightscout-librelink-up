@@ -1,6 +1,6 @@
 {
   "name": "nightscout-librelink-up",
-  "version": "2.7.4",
+  "version": "2.8.0",
   "description": "Script written in TypeScript that uploads CGM readings from LibreLink Up to Nightscout",
   "main": "dist/index.js",
   "scripts": {
