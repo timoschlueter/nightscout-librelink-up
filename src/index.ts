@@ -5,13 +5,13 @@
  * SPDX-License-Identifier: MIT
  */
 import express from 'express';
-import cron from 'node-cron';  // Assuming you have cron jobs as indicated by your logs
+import cron from 'node-cron';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Sample route to test if app is running
-app.get('/', (req, res) => {
+// Sample route to test if the app is running
+app.get('/', (req: express.Request, res: express.Response) => {
   res.send('App is running!');
 });
 
@@ -23,6 +23,7 @@ cron.schedule('*/5 * * * *', () => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
 
 import {LLU_API_ENDPOINTS} from "./constants/llu-api-endpoints";
 import * as cron from "node-cron";
