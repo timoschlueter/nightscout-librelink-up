@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "npx tsc",
-    "start": "npx ts-node --transpile-only src/index.ts",
+    "start": "node dist/index.js",
     "start-dev": "npx ts-node src/index.ts",
     "start-heroku": "node dist/index.js",
     "lint": "npx eslint . --fix",
