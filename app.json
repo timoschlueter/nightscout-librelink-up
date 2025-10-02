@@ -37,6 +37,11 @@
       "value": "EU",
       "required": false
     },
+    "LINK_UP_VERSION": {
+      "description": "LibreLink Up App Version. This may need to be updated if you are using a newer version of the LibreLink Up App",
+      "value": "4.16.0",
+      "required": false
+    },
     "NIGHTSCOUT_URL": {
       "description": "Your Nightscout URL",
       "value": "",
