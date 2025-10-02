@@ -55,10 +55,11 @@ function readConfig()
         nightscoutBaseUrl: url.toString(),
         linkUpUsername: process.env.LINK_UP_USERNAME as string,
         linkUpPassword: process.env.LINK_UP_PASSWORD as string,
+        linkUpVersion: process.env.LINK_UP_VERSION || "4.16.0",
 
         logLevel: process.env.LOG_LEVEL || 'info',
         singleShot: process.env.SINGLE_SHOT === 'true',
-	allData: process.env.ALL_DATA === 'true',
+        allData: process.env.ALL_DATA === 'true',
 
         nightscoutApiV3: process.env.NIGHTSCOUT_API_V3 === 'true',
         nightscoutDisableHttps: process.env.NIGHTSCOUT_DISABLE_HTTPS === 'true',
