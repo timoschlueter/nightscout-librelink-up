@@ -1,0 +1,56 @@
+#
+# Digital Ocean App Platform Deployment Template
+#
+spec:
+  name: nightscout-librelink-up
+  region: fra
+  workers:
+    - name: nightscout-librelink-up
+      image:
+        registry_type: DOCKER_HUB
+        registry: timoschlueter
+        repository: nightscout-librelink-up
+        tag: latest
+      instance_count: 1
+      instance_size_slug: apps-s-1vcpu-0.5gb
+      envs:
+        - key: LINK_UP_USERNAME
+          scope: RUN_TIME
+          type: GENERAL
+          value: ""
+        - key: LINK_UP_PASSWORD
+          scope: RUN_TIME
+          type: SECRET
+          value: ""
+        - key: LINK_UP_CONNECTION
+          scope: RUN_TIME
+          type: GENERAL
+          value: ""
+        - key: LINK_UP_TIME_INTERVAL
+          scope: RUN_TIME
+          type: GENERAL
+          value: "5"
+        - key: LINK_UP_REGION
+          scope: RUN_TIME
+          type: GENERAL
+          value: "EU"
+        - key: LINK_UP_VERSION
+          scope: RUN_TIME
+          type: GENERAL
+          value: "4.16.0"
+        - key: NIGHTSCOUT_URL
+          scope: RUN_TIME
+          type: GENERAL
+          value: ""
+        - key: NIGHTSCOUT_API_TOKEN
+          scope: RUN_TIME
+          type: SECRET
+          value: ""
+        - key: NIGHTSCOUT_DISABLE_HTTPS
+          scope: RUN_TIME
+          type: GENERAL
+          value: "false"
+        - key: LOG_LEVEL
+          scope: RUN_TIME
+          type: GENERAL
+          value: "info"
