@@ -5,7 +5,8 @@
 Script written in TypeScript that uploads CGM readings from LibreLink Up to Nightscout. The upload should
 work with at least Freestyle Libre 2 (FGM) and Libre 3 CGM sensors.
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)][heroku]
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)][heroku] 
+[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)][digitalocean]
 
 ## Configuration
 
@@ -124,3 +125,4 @@ You might also use an online tool to generate your hash, e.g. https://codebeauti
   be converted into a plugin.
 
 [heroku]: https://heroku.com/deploy?template=https://github.com/timoschlueter/nightscout-librelink-up
+[digitalocean]: https://cloud.digitalocean.com/apps/new?repo=https://github.com/timoschlueter/nightscout-librelink-up/tree/main
