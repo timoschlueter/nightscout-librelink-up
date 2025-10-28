@@ -128,7 +128,7 @@ You might also use an online tool to generate your hash, e.g. https://codebeauti
 If you enjoy using this project and would like to support its ongoing development, I would be truly grateful.
 You can help keep things moving forward by becoming a GitHub sponsor or by using one of the referral links for the hosting providers below.
 
-Your support means a lot — thank you! 🙌
+Your support means a lot — thank you!
 
 [![DigitalOcean Referral Badge](https://web-platforms.sfo2.cdn.digitaloceanspaces.com/WWW/Badge%201.svg)](https://www.digitalocean.com/?refcode=0b12ad5a5fe6&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge)
 
