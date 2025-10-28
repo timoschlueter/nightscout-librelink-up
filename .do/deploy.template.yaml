@@ -11,7 +11,7 @@ spec:
         repository: timoschlueter/nightscout-librelink-up
         tag: latest
       instance_count: 1
-      instance_size_slug: basic-xxs
+      instance_size_slug: apps-s-1vcpu-0.5gb
       envs:
         - key: LINK_UP_USERNAME
           scope: RUN_TIME
