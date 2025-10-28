@@ -5,8 +5,13 @@
 Script written in TypeScript that uploads CGM readings from LibreLink Up to Nightscout. The upload should
 work with at least Freestyle Libre 2 (FGM) and Libre 3 CGM sensors.
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)][heroku] 
-[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)][digitalocean]
+<a href="[digitalocean]">
+  <img src="https://www.deploytodo.com/do-btn-blue.svg" height="30" alt="Deploy to DigitalOcean" />
+</a>
+<a href="[heroku]">
+  <img src="https://www.herokucdn.com/deploy/button.svg" height="30" alt="Deploy to Heroku" />
+</a>
+
 
 ## Configuration
 
@@ -119,10 +124,13 @@ which will print the hash (40 characters in length):
 
 You might also use an online tool to generate your hash, e.g. https://codebeautify.org/sha1-hash-generator
 
-## ToDo
+## Sponsoring and affiliate links
+If you enjoy using this project and would like to support its ongoing development, I would be truly grateful.
+You can help keep things moving forward by becoming a GitHub sponsor or by using one of the referral links for the hosting providers below.
 
-- **Integration into Nightscout**: I have not yet looked into the plugin architecture of Nightscout. Maybe this should
-  be converted into a plugin.
+Your support means a lot — thank you! 🙌
+
+[![DigitalOcean Referral Badge](https://web-platforms.sfo2.cdn.digitaloceanspaces.com/WWW/Badge%201.svg)](https://www.digitalocean.com/?refcode=0b12ad5a5fe6&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge)
 
 [heroku]: https://heroku.com/deploy?template=https://github.com/timoschlueter/nightscout-librelink-up
-[digitalocean]: https://cloud.digitalocean.com/apps/new?repo=https://github.com/timoschlueter/nightscout-librelink-up/tree/deploy-to-digitalocean
+[digitalocean]: https://cloud.digitalocean.com/apps/new?repo=https://github.com/timoschlueter/nightscout-librelink-up/tree/deploy-to-digitalocean&refcode=0b12ad5a5fe6
