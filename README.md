@@ -5,7 +5,15 @@
 Script written in TypeScript that uploads CGM readings from LibreLink Up to Nightscout. The upload should
 work with at least Freestyle Libre 2 (FGM) and Libre 3 CGM sensors.
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)][heroku]
+<a href="https://cloud.digitalocean.com/apps/new?repo=https://github.com/timoschlueter/nightscout-librelink-up/tree/main&refcode=0b12ad5a5fe6" target="_blank">
+  <img src="https://www.deploytodo.com/do-btn-blue.svg" height="30" alt="Deploy to DigitalOcean" />
+</a>
+<a href="https://heroku.com/deploy?template=https://github.com/timoschlueter/nightscout-librelink-up" target="_blank">
+  <img src="https://www.herokucdn.com/deploy/button.svg" height="30" alt="Deploy to Heroku" />
+</a>
+<a href="https://render.com/deploy?repo=https://github.com/timoschlueter/nightscout-librelink-up" target="_blank">
+  <img src="https://render.com/images/deploy-to-render-button.svg" height="30" alt="Deploy to Render" />
+</a>
 
 ## Configuration
 
@@ -31,15 +39,30 @@ The script takes the following environment variables
 
 There are different options for using this script.
 
-### Variant 1: On Heroku
+### Variant 1: On Digital Ocean App Platform
 
-- Click on [![Deploy](https://www.herokucdn.com/deploy/button.svg)][heroku]
+- Click on <a target="_blank" href="https://cloud.digitalocean.com/apps/new?repo=https://github.com/timoschlueter/nightscout-librelink-up/tree/main&refcode=0b12ad5a5fe6"><img src="https://www.deploytodo.com/do-btn-blue.svg" height="30" alt="Deploy to DigitalOcean" /></a>
+- Login to Digital Ocean if not already happened ([Register first if you don't have an account (referral link)](https://www.digitalocean.com/?refcode=0b12ad5a5fe6&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge))
+- Provide proper values for the `Environment variables`
+- Click `Create app` to deploy the app
+
+### Variant 2: On Heroku
+
+- Click on <a target="_blank" href="https://heroku.com/deploy?template=https://github.com/timoschlueter/nightscout-librelink-up"><img src="https://www.herokucdn.com/deploy/button.svg" height="30" alt="Deploy to Heroku" /></a>
 - Login to Heroku if not already happened
 - Provide proper values for the `environment variables`
 - **Important: make sure that yor Nightscout API token is [hashed with SHA1](#hashing-api-token)**
 - Click `Deploy` to deploy the app
 
-### Variant 2: Local
+### Variant 3: On Render
+
+- Click on <a href="https://render.com/deploy?repo=https://github.com/timoschlueter/nightscout-librelink-up" target="_blank"><img src="https://render.com/images/deploy-to-render-button.svg" height="30" alt="Deploy to Render" /></a>
+- Login to Render if not already happened
+- Provide proper values for the `Environment variables`
+- **Important: make sure that yor Nightscout API token is [hashed with SHA1](#hashing-api-token)**
+- Click `Deploy Background Worker` to deploy the app
+
+### Variant 4: Local
 
 The installation process can be started by running `npm install` in the root directory.
 
@@ -60,7 +83,7 @@ npm start
 
 Execute the script and check the console output.
 
-### Variant 3: Docker
+### Variant 5: Docker
 
 The easiest way to use this is to use the latest docker image:
 
@@ -75,7 +98,7 @@ docker run -e LINK_UP_USERNAME="mail@example.com" \
            timoschlueter/nightscout-librelink-up
 ```
 
-### Variant 4: Docker Compose
+### Variant 6: Docker Compose
 
 If you are already using a dockerized Nightscout instance, this image can be easily added to your existing
 docker-compose file. In this example, the region is set for germany ("DE"):
@@ -118,9 +141,10 @@ which will print the hash (40 characters in length):
 
 You might also use an online tool to generate your hash, e.g. https://codebeautify.org/sha1-hash-generator
 
-## ToDo
+## Sponsoring and affiliate links
+If you enjoy using this project and would like to support its ongoing development, I would be truly grateful.
+You can help keep things moving forward by becoming a GitHub sponsor or by using one of the referral links for the hosting providers below.
 
-- **Integration into Nightscout**: I have not yet looked into the plugin architecture of Nightscout. Maybe this should
-  be converted into a plugin.
+Your support means a lot — thank you!
 
-[heroku]: https://heroku.com/deploy?template=https://github.com/timoschlueter/nightscout-librelink-up
+[![DigitalOcean Referral Badge](https://web-platforms.sfo2.cdn.digitaloceanspaces.com/WWW/Badge%201.svg)](https://www.digitalocean.com/?refcode=0b12ad5a5fe6&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge)
