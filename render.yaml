@@ -16,20 +16,15 @@ services:
         sync: false
       - key: LINK_UP_TIME_INTERVAL
         value: "5"
-        sync: false
       - key: LINK_UP_REGION
         value: "EU"
-        sync: false
       - key: LINK_UP_VERSION
         value: "4.16.0"
-        sync: false
       - key: NIGHTSCOUT_URL
         sync: false
       - key: NIGHTSCOUT_API_TOKEN
         sync: false
       - key: NIGHTSCOUT_DISABLE_HTTPS
         value: "false"
-        sync: false
       - key: LOG_LEVEL
         value: "info"
-        sync: false
