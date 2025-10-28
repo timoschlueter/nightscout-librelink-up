@@ -125,4 +125,4 @@ You might also use an online tool to generate your hash, e.g. https://codebeauti
   be converted into a plugin.
 
 [heroku]: https://heroku.com/deploy?template=https://github.com/timoschlueter/nightscout-librelink-up
-[digitalocean]: https://cloud.digitalocean.com/apps/new?repo=https://github.com/timoschlueter/nightscout-librelink-up/tree/feature/deploy-to-digitalocean
+[digitalocean]: https://cloud.digitalocean.com/apps/new?repo=https://github.com/timoschlueter/nightscout-librelink-up/tree/deploy-to-digitalocean
