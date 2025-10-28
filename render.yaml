@@ -13,7 +13,7 @@ services:
       - key: LINK_UP_PASSWORD
         sync: false
       - key: LINK_UP_CONNECTION
-        sync: false
+        value: ""
       - key: LINK_UP_TIME_INTERVAL
         value: "5"
       - key: LINK_UP_REGION
