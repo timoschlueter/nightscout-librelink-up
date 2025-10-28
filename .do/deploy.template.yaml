@@ -8,7 +8,8 @@ spec:
     - name: nightscout-librelink-up
       image:
         registry_type: DOCKER_HUB
-        repository: timoschlueter/nightscout-librelink-up
+        registry: timoschlueter
+        repository: nightscout-librelink-up
         tag: latest
       instance_count: 1
       instance_size_slug: apps-s-1vcpu-0.5gb
