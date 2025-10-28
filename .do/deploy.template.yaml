@@ -8,7 +8,6 @@ spec:
     - name: nightscout-librelink-up
       image:
         registry_type: DOCKER_HUB
-        registry: Docker Hub
         repository: timoschlueter/nightscout-librelink-up
         tag: latest
       instance_count: 1
