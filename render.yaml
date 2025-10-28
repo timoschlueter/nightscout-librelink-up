@@ -9,9 +9,11 @@ services:
     autoDeploy: true
     envVars:
       - key: LINK_UP_USERNAME
+        value: ""
       - key: LINK_UP_PASSWORD
         sync: false
       - key: LINK_UP_CONNECTION
+        value: ""
       - key: LINK_UP_TIME_INTERVAL
         value: "5"
       - key: LINK_UP_REGION
@@ -19,6 +21,7 @@ services:
       - key: LINK_UP_VERSION
         value: "4.16.0"
       - key: NIGHTSCOUT_URL
+        value: ""
       - key: NIGHTSCOUT_API_TOKEN
         sync: false
       - key: NIGHTSCOUT_DISABLE_HTTPS
