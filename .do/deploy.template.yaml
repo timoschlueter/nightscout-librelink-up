@@ -49,7 +49,7 @@ spec:
         - key: NIGHTSCOUT_DISABLE_HTTPS
           scope: RUN_TIME
           type: GENERAL
-          value: ""
+          value: "false"
         - key: LOG_LEVEL
           scope: RUN_TIME
           type: GENERAL
