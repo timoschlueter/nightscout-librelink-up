@@ -5,10 +5,10 @@
 Script written in TypeScript that uploads CGM readings from LibreLink Up to Nightscout. The upload should
 work with at least Freestyle Libre 2 (FGM) and Libre 3 CGM sensors.
 
-<a href="[digitalocean]">
+<a href="https://cloud.digitalocean.com/apps/new?repo=https://github.com/timoschlueter/nightscout-librelink-up/tree/deploy-to-digitalocean&refcode=0b12ad5a5fe6">
   <img src="https://www.deploytodo.com/do-btn-blue.svg" height="30" alt="Deploy to DigitalOcean" />
 </a>
-<a href="[heroku]">
+<a href="https://heroku.com/deploy?template=https://github.com/timoschlueter/nightscout-librelink-up">
   <img src="https://www.herokucdn.com/deploy/button.svg" height="30" alt="Deploy to Heroku" />
 </a>
 
@@ -37,9 +37,18 @@ The script takes the following environment variables
 
 There are different options for using this script.
 
-### Variant 1: On Heroku
+### Variant 1: On Digital Ocean App Platform
 
-- Click on [![Deploy](https://www.herokucdn.com/deploy/button.svg)][heroku]
+- Click on <a href="https://cloud.digitalocean.com/apps/new?repo=https://github.com/timoschlueter/nightscout-librelink-up/tree/deploy-to-digitalocean&refcode=0b12ad5a5fe6"><img src="https://www.deploytodo.com/do-btn-blue.svg" height="30" alt="Deploy to DigitalOcean" /></a>
+- Login to Digital Ocean if not already happened ([Register first if you don't have an account (referral link)](https://www.digitalocean.com/?refcode=0b12ad5a5fe6&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge))
+- Provide proper values for the `environment variables`
+- **Important: make sure that yor Nightscout API token is [hashed with SHA1](#hashing-api-token)**
+- Click `Deploy` to deploy the app
+
+
+### Variant 2: On Heroku
+
+- Click on <a href="https://heroku.com/deploy?template=https://github.com/timoschlueter/nightscout-librelink-up"><img src="https://www.herokucdn.com/deploy/button.svg" height="30" alt="Deploy to Heroku" /></a>
 - Login to Heroku if not already happened
 - Provide proper values for the `environment variables`
 - **Important: make sure that yor Nightscout API token is [hashed with SHA1](#hashing-api-token)**
@@ -131,6 +140,3 @@ You can help keep things moving forward by becoming a GitHub sponsor or by using
 Your support means a lot — thank you!
 
 [![DigitalOcean Referral Badge](https://web-platforms.sfo2.cdn.digitaloceanspaces.com/WWW/Badge%201.svg)](https://www.digitalocean.com/?refcode=0b12ad5a5fe6&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge)
-
-[heroku]: https://heroku.com/deploy?template=https://github.com/timoschlueter/nightscout-librelink-up
-[digitalocean]: https://cloud.digitalocean.com/apps/new?repo=https://github.com/timoschlueter/nightscout-librelink-up/tree/deploy-to-digitalocean&refcode=0b12ad5a5fe6
