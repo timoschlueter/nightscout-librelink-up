@@ -63,7 +63,8 @@ function readConfig()
 
         nightscoutApiV3: process.env.NIGHTSCOUT_API_V3 === 'true',
         nightscoutDisableHttps: process.env.NIGHTSCOUT_DISABLE_HTTPS === 'true',
-        nightscoutDevice: process.env.DEVICE_NAME || 'nightscout-librelink-up',
+        nightscoutDevice: process.env.DEVICE_NAME || 'freestyle-libre-sensor',
+        app: process.env.APP || 'nightscout-librelink-up-script',
 
         linkUpRegion: process.env.LINK_UP_REGION || 'EU',
         linkUpTimeInterval: Number(process.env.LINK_UP_TIME_INTERVAL) || 5,
