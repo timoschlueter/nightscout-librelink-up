@@ -60,11 +60,10 @@ function readConfig()
         logLevel: process.env.LOG_LEVEL || 'info',
         singleShot: process.env.SINGLE_SHOT === 'true',
         allData: process.env.ALL_DATA === 'true',
-
         nightscoutApiV3: process.env.NIGHTSCOUT_API_V3 === 'true',
         nightscoutDisableHttps: process.env.NIGHTSCOUT_DISABLE_HTTPS === 'true',
-        nightscoutDevice: process.env.DEVICE_NAME || 'freestyle-libre-sensor',
-        app: process.env.APP || 'nightscout-librelink-up-script',
+        nightscoutDevice: process.env.DEVICE_NAME || 'fsl-librelink-up',
+        nightscoutApp: process.env.APP || 'librelinkup-to-nightscout-script',
 
         linkUpRegion: process.env.LINK_UP_REGION || 'EU',
         linkUpTimeInterval: Number(process.env.LINK_UP_TIME_INTERVAL) || 5,
