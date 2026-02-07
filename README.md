@@ -68,7 +68,13 @@ There are different options for using this script.
 
 The installation process can be started by running `npm install` in the root directory.
 
-To start the process simply create a bash script with the set environment variables (`start.sh`):
+To start the script, either:
+
+1. Copy `.env.example` file to `.env` and adjust the values accordingly, then run `npm start`
+
+or
+
+2. Create a bash script with the set environment variables (`start.sh`), then execute the script and check the console output:
 
 ```shell
 #!/bin/bash
@@ -82,8 +88,6 @@ export LOG_LEVEL="info"
 
 npm start
 ```
-
-Execute the script and check the console output.
 
 ### Variant 5: Docker
 
