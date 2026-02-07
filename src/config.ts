@@ -1,4 +1,8 @@
+import dotenvx from "@dotenvx/dotenvx";
 import {LLU_API_ENDPOINTS} from './constants/llu-api-endpoints';
+
+// configure dotenvx, and ignore missing .env file (assume a missing .env file is intentional)
+dotenvx.config({ quiet: true, ignore: ['MISSING_ENV_FILE'] });
 
 function readConfig()
 {
