@@ -17,16 +17,16 @@ work with at least Freestyle Libre 2 (FGM) and Libre 3 CGM sensors.
 
 ## Configuration
 
-The script takes the following environment variables
+The script takes the following environment variables:
 
 | Variable                 | Description                                                                                                                                                                                                                                       | Example                                  | Required |
 |--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------|----------|
 | LINK_UP_USERNAME         | LibreLink Up Login Email                                                                                                                                                                                                                          | mail@example.com                         | X        |
 | LINK_UP_PASSWORD         | LibreLink Up Login Password                                                                                                                                                                                                                       | mypassword                               | X        |
 | LINK_UP_CONNECTION       | LibreLink Up Patient-ID. Can be received from the console output if multiple connections are available.                                                                                                                                           | 123456abc-abcd-efgh-7891def              |          |
-| LINK_UP_TIME_INTERVAL    | The time interval of requesting values from libre link up                                                                                                                                                                                         | 5                                        |          |
+| LINK_UP_TIME_INTERVAL    | The time interval (in minutes) of requesting values from libre link up.                                                                                                                                                                           | 5                                        |          |
 | LINK_UP_REGION           | Your region. Used to determine the correct LibreLinkUp service (Possible values: AE, AP, AU, CA, DE, EU, EU2, FR, JP, US, LA, RU, CN)                                                                                                             | EU                                       |          |
-| LINK_UP_VERSION          | LibreLink Up App Version. This may need to be updated if you are using a newer version of the LibreLink Up App                                                                                                                                    | 4.16.0                                   |          |
+| LINK_UP_VERSION          | LibreLink Up App Version. This may need to be updated if you are using a newer version of the LibreLink Up App.                                                                                                                                   | 4.16.0                                   |          |
 | NIGHTSCOUT_URL           | Hostname of the Nightscout instance (without https://)                                                                                                                                                                                            | nightscout.yourdomain.com                | X        |
 | NIGHTSCOUT_API_TOKEN     | SHA1 Hash of Nightscout access token                                                                                                                                                                                                              | 162f14de46149447c3338a8286223de407e3b2fa | X        |
 | NIGHTSCOUT_DISABLE_HTTPS | Disables the HTTPS requirement for Nightscout URLs                                                                                                                                                                                                | true                                     |          |
@@ -34,6 +34,8 @@ The script takes the following environment variables
 | LOG_LEVEL                | The setting of verbosity for logging, should be one of info or debug                                                                                                                                                                              | info                                     |          |
 | SINGLE_SHOT              | Disables the scheduler and runs the script just once                                                                                                                                                                                              | true                                     |          |
 | ALL_DATA                 | Upload all available data from LibreLink Up instead of just data newer than last upload. LibreLinkUp sometimes lags behind in reporting recent historical data, so it is advised to run the script with ALL_DATA set to true at least once a day. | true                                     |          |
+
+These variables can be set in your environment or in a `.env` file in the root directory of the project - see `.env.example` for an example (copy this file to `.env` and adjust the values accordingly).
 
 ## Usage
 
@@ -66,7 +68,13 @@ There are different options for using this script.
 
 The installation process can be started by running `npm install` in the root directory.
 
-To start the process simply create a bash script with the set environment variables (`start.sh`):
+To start the script, either:
+
+1. Copy `.env.example` file to `.env` and adjust the values accordingly, then run `npm start`
+
+or
+
+2. Create a bash script with the set environment variables (`start.sh`), then execute the script and check the console output:
 
 ```shell
 #!/bin/bash
@@ -80,8 +88,6 @@ export LOG_LEVEL="info"
 
 npm start
 ```
-
-Execute the script and check the console output.
 
 ### Variant 5: Docker
 
