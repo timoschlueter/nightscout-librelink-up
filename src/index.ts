@@ -51,7 +51,7 @@ const logFormat = printf(({level, message}) =>
     return `[${level}]: ${message}`;
 });
 
-const logger = createLogger({
+export const logger = createLogger({
     format: combine(
         timestamp(),
         logFormat
