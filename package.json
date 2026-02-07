@@ -35,6 +35,7 @@
   },
   "homepage": "https://github.com/timoschlueter/nightscout-librelink-up#readme",
   "dependencies": {
+    "@dotenvx/dotenvx": "^1.52.0",
     "axios": "~1.12.2",
     "axios-mock-adapter": "~2.1.0",
     "http-cookie-agent": "~7.0.2",
