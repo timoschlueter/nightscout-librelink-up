@@ -1,6 +1,6 @@
 {
   "name": "nightscout-librelink-up",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "Script written in TypeScript that uploads CGM readings from LibreLink Up to Nightscout",
   "main": "dist/index.js",
   "scripts": {
@@ -35,6 +35,7 @@
   },
   "homepage": "https://github.com/timoschlueter/nightscout-librelink-up#readme",
   "dependencies": {
+    "@dotenvx/dotenvx": "~1.52.0",
     "axios": "~1.13.2",
     "axios-mock-adapter": "~2.1.0",
     "http-cookie-agent": "~7.0.2",

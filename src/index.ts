@@ -108,10 +108,15 @@ else
 {
     const schedule = `*/${config.linkUpTimeInterval} * * * *`;
     logger.info("Starting cron schedule: " + schedule)
-    cron.schedule(schedule, () =>
+    const task = cron.schedule(schedule, () =>
     {
         main().then()
     }, {});
+
+    // Catch missed exectutions, and retry if exectution is missed
+    task.on('execution:missed', () => {
+        main().then();
+    });
 }
 
 async function main(): Promise<void>
