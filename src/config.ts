@@ -14,7 +14,7 @@ function readConfig()
         ];
     }
 
-    for (let envName of requiredEnvs)
+    for (const envName of requiredEnvs)
     {
         if (!process.env[envName])
         {
