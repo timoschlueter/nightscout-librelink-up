@@ -13,6 +13,7 @@ export interface NightscoutConfig {
 	nightscoutApiToken: string;
 	nightscoutBaseUrl: string;
 	nightscoutDevice: string;
+	nightscoutApp: string;
 }
 
 export interface Entry {
