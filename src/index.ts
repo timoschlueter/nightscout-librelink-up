@@ -1,6 +1,6 @@
 /**
- * Nightscout LibreLink Up Uploader/Sidecar
- * Script written in TypeScript that uploads CGM readings from LibreLink Up to Nightscout.
+ * Nightscout LibreLinkUp Uploader/Sidecar
+ * Script written in TypeScript that uploads CGM readings from LibreLinkUp to Nightscout.
  *
  * SPDX-License-Identifier: MIT
  */
@@ -80,7 +80,7 @@ axios.interceptors.response.use(
 const USER_AGENT = "Mozilla/5.0 (iPhone; CPU OS 17_4.1 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/17.4.1 Mobile/10A5355d Safari/8536.25";
 
 /**
- * LibreLink Up API Settings (Don't change this unless you know what you are doing)
+ * LibreLinkUp API Settings (Don't change this unless you know what you are doing)
  */
 const LIBRE_LINK_UP_VERSION = config.linkUpVersion;
 const LIBRE_LINK_UP_PRODUCT = "llu.ios";
@@ -129,7 +129,7 @@ async function main(): Promise<void>
         const authTicket: AuthTicket | null = await login();
         if (!authTicket)
         {
-            logger.error("LibreLink Up - No AuthTicket received. Please check your credentials.");
+            logger.error("LibreLinkUp - No AuthTicket received. Please check your credentials.");
             deleteAuthTicket();
             deleteAccountId();
             return;
@@ -171,23 +171,23 @@ export async function login(): Promise<AuthTicket | null>
         {
             if (response.data.status !== 0)
             {
-                logger.error(`LibreLink Up - Non-zero status code: ${JSON.stringify(response.data)}`)
+                logger.error(`LibreLinkUp - Non-zero status code: ${JSON.stringify(response.data)}`)
                 return null;
             }
             if (response.data.data.redirect === true && response.data.data.region)
             {
                 const correctRegion = response.data.data.region.toUpperCase();
                 logger.error(
-                    `LibreLink Up - Logged in to the wrong region. Switch to '${correctRegion}' region.`
+                    `LibreLinkUp - Logged in to the wrong region. Switch to '${correctRegion}' region.`
                 );
                 return null;
             }
-            logger.info("Logged in to LibreLink Up");
+            logger.info("Logged in to LibreLinkUp");
             updateAccountId(response.data.data.user.id);
             return response.data.data.authTicket;
         } catch (err)
         {
-            logger.error("Invalid authentication token. Please check your LibreLink Up credentials", err);
+            logger.error("Invalid authentication token. Please check your LibreLinkUp credentials", err);
             return null;
         }
     } catch (error)
@@ -249,13 +249,13 @@ export async function getLibreLinkUpConnection(): Promise<string | null>
 
         if (connectionData.length === 0)
         {
-            logger.error("No LibreLink Up connection found");
+            logger.error("No LibreLinkUp connection found");
             return null;
         }
 
         if (connectionData.length === 1)
         {
-            logger.info("Found 1 LibreLink Up connection.");
+            logger.info("Found 1 LibreLinkUp connection.");
             logPickedUpConnection(connectionData[0]);
             return connectionData[0].patientId;
         }
@@ -346,7 +346,7 @@ async function uploadToNightScout(measurementData: GraphData): Promise<void>
 
 function dumpConnectionData(connectionData: Connection[]): void
 {
-    logger.debug("Found " + connectionData.length + " LibreLink Up connections:");
+    logger.debug("Found " + connectionData.length + " LibreLinkUp connections:");
     connectionData.map((connectionEntry: Connection, index: number) =>
     {
         logger.debug("[" + (index + 1) + "] " + connectionEntry.firstName + " " + connectionEntry.lastName + " (Patient-ID: " +
