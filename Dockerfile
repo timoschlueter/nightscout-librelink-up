@@ -22,7 +22,7 @@ RUN npm run build
 RUN npm prune --omit dev
 
 FROM node:20-bookworm-slim
-LABEL description="Script written in TypeScript that uploads CGM readings from LibreLink Up to Nightscout"
+LABEL description="Script written in TypeScript that uploads CGM readings from LibreLinkUp to Nightscout"
 
 COPY --from=build-stage /usr/src/app /usr/src/app
 

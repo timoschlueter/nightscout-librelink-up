@@ -19,7 +19,7 @@ mock.onGet("https://api-eu.libreview.io/llu/connections").reply(200, connections
 mock.onGet("https://api-eu.libreview.io/llu/connections/7ad66b40-ba9b-401e-9845-4f49f998cf16/graph").reply(200, graphResponse);
 mock.onGet("http://localhost:1337/api/v1/entries?count=1").reply(200, []);
 
-describe("LibreLink Up", () =>
+describe("LibreLinkUp", () =>
 {
     const env = process.env
 
@@ -34,7 +34,7 @@ describe("LibreLink Up", () =>
         process.env = env
     })
 
-    it("Successful login to LibreLink Up", async () =>
+    it("Successful login to LibreLinkUp", async () =>
     {
         const authTicket: AuthTicket | null = await login();
         expect(authTicket).not.toBeNull();
@@ -43,7 +43,7 @@ describe("LibreLink Up", () =>
         expect(authTicket?.duration).toBe(15552000000);
     });
 
-    it("Failed login to LibreLink Up", async () =>
+    it("Failed login to LibreLinkUp", async () =>
     {
         mock.onPost("https://api-eu.libreview.io/llu/auth/login").reply(200, loginFailedResponse);
 
