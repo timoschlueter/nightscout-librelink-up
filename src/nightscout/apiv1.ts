@@ -1,6 +1,5 @@
-import axios, { RawAxiosRequestHeaders } from "axios";
-import { Entry, NightscoutAPI, NightscoutConfig } from "./interface";
-import { logger } from "..";
+import axios, {RawAxiosRequestHeaders} from "axios";
+import {Entry, NightscoutAPI, NightscoutConfig} from "./interface";
 
 interface NightscoutApiV1HttpHeaders extends RawAxiosRequestHeaders {
   "api-secret": string | undefined;
@@ -11,8 +10,7 @@ export class Client implements NightscoutAPI {
   readonly headers: NightscoutApiV1HttpHeaders;
   readonly device: string;
 
-    constructor(config: NightscoutConfig)
-    {
+  constructor(config: NightscoutConfig) {
     this.baseUrl = config.nightscoutBaseUrl;
     this.headers = {
       "api-secret": config.nightscoutApiToken,
@@ -22,25 +20,21 @@ export class Client implements NightscoutAPI {
     this.device = config.nightscoutDevice;
   }
 
-    async lastEntry(): Promise<Entry | null>
-    {
+  async lastEntry(): Promise<Entry | null> {
     const url = new URL("/api/v1/entries?count=1", this.baseUrl).toString();
-        const resp = await axios.get(url, {headers: this.headers});
+    const resp = await axios.get(url, {headers: this.headers});
 
-        if (resp.status !== 200)
-        {
+    if (resp.status !== 200) {
       throw Error(`failed to get last entry: ${resp.statusText}`);
     }
 
-        if (!resp.data || resp.data.length === 0)
-        {
+    if (!resp.data || resp.data.length === 0) {
       return null;
     }
     return resp.data.pop();
   }
 
-    async uploadEntries(entries: Entry[]): Promise<void>
-    {
+  async uploadEntries(entries: Entry[]): Promise<void> {
     const url = new URL("/api/v1/entries", this.baseUrl).toString();
     const entriesV1 = entries.map((e) => ({
       type: "sgv",
@@ -51,11 +45,10 @@ export class Client implements NightscoutAPI {
       dateString: e.date.toISOString(),
     }));
 
-        const resp = await axios.post(url, entriesV1, {headers: this.headers});
+    const resp = await axios.post(url, entriesV1, {headers: this.headers});
 
-        if (resp.status !== 200)
-        {
-            throw Error(`failed to post new entries: ${resp.statusText} ${resp.status}`);
+    if (resp.status !== 200) {
+      throw Error(`failed to post new entries: ${resp.statusText} ${resp.status}`);
     }
 
     return;
