@@ -12,7 +12,7 @@ import {LoginResponse} from "./interfaces/librelink/login-response";
 import {ConnectionsResponse} from "./interfaces/librelink/connections-response";
 import {GraphData, GraphResponse} from "./interfaces/librelink/graph-response";
 import {AuthTicket, Connection, GlucoseItem} from "./interfaces/librelink/common";
-import {getUtcDateFromString, mapTrendArrow} from "./helpers/helpers";
+import {getUtcDateFromString, mapTrendArrow, retry} from "./helpers/helpers";
 import {LibreLinkUpHttpHeaders} from "./interfaces/http-headers";
 import {Client as ClientV1} from "./nightscout/apiv1";
 import {Client as ClientV3} from "./nightscout/apiv3";
@@ -102,7 +102,7 @@ const libreLinkUpHttpHeaders: LibreLinkUpHttpHeaders = {
 
 if (config.singleShot)
 {
-    main().then();
+    retry(main, { retryAttempts: config.retryAttempts, retryIntervalSeconds: config.retryIntervalSeconds }).then();
 }
 else
 {
@@ -110,12 +110,12 @@ else
     logger.info("Starting cron schedule: " + schedule)
     const task = cron.schedule(schedule, () =>
     {
-        main().then()
+        retry(main, { retryAttempts: config.retryAttempts, retryIntervalSeconds: config.retryIntervalSeconds }).then();
     }, {});
 
     // Catch missed exectutions, and retry if exectution is missed
     task.on('execution:missed', () => {
-        main().then();
+        retry(main, { retryAttempts: config.retryAttempts, retryIntervalSeconds: config.retryIntervalSeconds }).then();
     });
 }
 

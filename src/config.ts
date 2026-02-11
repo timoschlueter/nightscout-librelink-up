@@ -73,6 +73,8 @@ function readConfig()
         linkUpRegion: process.env.LINK_UP_REGION || 'EU',
         linkUpTimeInterval: Number(process.env.LINK_UP_TIME_INTERVAL) || 5,
         linkUpConnection: process.env.LINK_UP_CONNECTION as string,
+        retryAttempts: Number(process.env.RETRY_ATTEMPTS) || 0,
+        retryIntervalSeconds: Number(process.env.RETRY_INTERVAL_SECONDS) || 30,
     };
 }
 
