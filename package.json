@@ -38,6 +38,7 @@
     "@dotenvx/dotenvx": "~1.52.0",
     "axios": "~1.13.2",
     "axios-mock-adapter": "~2.1.0",
+    "googleapis": "~144.0.0",
     "http-cookie-agent": "~7.0.2",
     "node-cron": "~4.2.1",
     "tough-cookie": "~5.1.2",

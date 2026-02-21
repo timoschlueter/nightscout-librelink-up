@@ -16,6 +16,15 @@ function readConfig()
             'LINK_UP_USERNAME',
             'LINK_UP_PASSWORD',
         ];
+
+        if (process.env.GOOGLE_SHEETS_ENABLED === 'true')
+        {
+            requiredEnvs.push(
+                'GOOGLE_SHEET_ID',
+                'GOOGLE_SERVICE_ACCOUNT_EMAIL',
+                'GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY',
+            );
+        }
     }
 
     for (const envName of requiredEnvs)
@@ -73,6 +82,10 @@ function readConfig()
         linkUpRegion: process.env.LINK_UP_REGION || 'EU',
         linkUpTimeInterval: Number(process.env.LINK_UP_TIME_INTERVAL) || 5,
         linkUpConnection: process.env.LINK_UP_CONNECTION as string,
+        googleSheetsEnabled: process.env.GOOGLE_SHEETS_ENABLED === 'true',
+        googleSheetId: process.env.GOOGLE_SHEET_ID as string,
+        googleServiceAccountEmail: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL as string,
+        googleServiceAccountPrivateKey: process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY as string,
     };
 }
 

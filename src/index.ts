@@ -17,6 +17,7 @@ import {LibreLinkUpHttpHeaders} from "./interfaces/http-headers";
 import {Client as ClientV1} from "./nightscout/apiv1";
 import {Client as ClientV3} from "./nightscout/apiv3";
 import {Entry} from "./nightscout/interface";
+import {GoogleSheetsClient} from "./googlesheets/client";
 import readConfig from "./config";
 import {CookieJar} from "tough-cookie";
 import {HttpCookieAgent} from "http-cookie-agent/http";
@@ -145,6 +146,11 @@ async function main(): Promise<void>
     }
 
     await uploadToNightScout(glucoseGraphData);
+
+    if (googleSheetsClient)
+    {
+        await uploadToGoogleSheets(glucoseGraphData);
+    }
 }
 
 export async function login(): Promise<AuthTicket | null>
@@ -292,6 +298,10 @@ const nightscoutClient = config.nightscoutApiV3
     ? new ClientV3(config)
     : new ClientV1(config);
 
+const googleSheetsClient = config.googleSheetsEnabled
+    ? new GoogleSheetsClient(config)
+    : null;
+
 export async function createFormattedMeasurements(measurementData: GraphData): Promise<Entry[]>
 {
     const formattedMeasurements: Entry[] = [];
@@ -341,6 +351,17 @@ async function uploadToNightScout(measurementData: GraphData): Promise<void>
     else
     {
         logger.info("No new measurements to upload");
+    }
+}
+
+async function uploadToGoogleSheets(measurementData: GraphData): Promise<void>
+{
+    try
+    {
+        await googleSheetsClient!.uploadGlucoseData(measurementData);
+    } catch (error)
+    {
+        logger.error("Google Sheets upload failed ", error);
     }
 }
 
