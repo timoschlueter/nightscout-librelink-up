@@ -63,6 +63,7 @@ function readConfig()
         logLevel: process.env.LOG_LEVEL || 'info',
         singleShot: process.env.SINGLE_SHOT === 'true',
         allData: process.env.ALL_DATA === 'true',
+        sensorInfo: process.env.SENSOR_INFO === 'true',
         nightscoutApiV3: process.env.NIGHTSCOUT_API_V3 === 'true',
         nightscoutDisableHttps: process.env.NIGHTSCOUT_DISABLE_HTTPS === 'true',
         nightscoutDevice:
