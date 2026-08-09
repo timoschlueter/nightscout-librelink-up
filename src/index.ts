@@ -10,13 +10,13 @@ import axios from "axios";
 import {createLogger, format, transports} from "winston";
 import {LoginResponse} from "./interfaces/librelink/login-response";
 import {ConnectionsResponse} from "./interfaces/librelink/connections-response";
-import {GraphData, GraphResponse} from "./interfaces/librelink/graph-response";
+import {ActiveSensor, GraphData, GraphResponse} from "./interfaces/librelink/graph-response";
 import {AuthTicket, Connection, GlucoseItem} from "./interfaces/librelink/common";
 import {getUtcDateFromString, mapTrendArrow, retry} from "./helpers/helpers";
 import {LibreLinkUpHttpHeaders} from "./interfaces/http-headers";
 import {Client as ClientV1} from "./nightscout/apiv1";
 import {Client as ClientV3} from "./nightscout/apiv3";
-import {Entry} from "./nightscout/interface";
+import {Entry, SensorInfo} from "./nightscout/interface";
 import readConfig from "./config";
 import {CookieJar} from "tough-cookie";
 import {HttpCookieAgent} from "http-cookie-agent/http";
@@ -292,8 +292,89 @@ const nightscoutClient = config.nightscoutApiV3
     ? new ClientV3(config)
     : new ClientV1(config);
 
+/**
+ * Find the sensor that was active at a given timestamp by comparing sensor activation times
+ * @param activeSensors Array of active sensors with their activation times
+ * @param readingTimestamp Timestamp of the glucose reading
+ * @returns Serial number and activation time (Unix seconds) of the sensor active at that time
+ * @throws Error if no active sensor can be found or if sensor data is invalid
+ */
+function findActiveSensorInfo(activeSensors: ActiveSensor[], readingTimestamp: Date): { sn: string, activationTime: number }
+{
+    if (!activeSensors || activeSensors.length === 0)
+    {
+        throw new Error("No active sensors available");
+    }
+
+    // Sensor activation times are Unix timestamps in seconds
+    const readingTime = readingTimestamp.getTime() / 1000;
+
+    // Sort sensors by activation time (newest first)
+    const sortedSensors = activeSensors
+        .map(activeSensor =>
+        {
+            if (!activeSensor.sensor || !activeSensor.sensor.sn || typeof activeSensor.sensor.a !== "number")
+            {
+                throw new Error("Invalid sensor data structure");
+            }
+            return {
+                sn: activeSensor.sensor.sn,
+                activationTime: activeSensor.sensor.a
+            };
+        })
+        .sort((a, b) => b.activationTime - a.activationTime);
+
+    // The active sensor is the one with the latest activation time that is still before or at the reading time
+    for (const sensor of sortedSensors)
+    {
+        if (sensor.activationTime <= readingTime)
+        {
+            return sensor;
+        }
+    }
+
+    throw new Error(`No sensor found active at timestamp ${readingTimestamp.toISOString()}`);
+}
+
+/**
+ * Build the sensor info to store with a glucose reading. Never throws: lookup
+ * failures are reported in the error property so the reading itself still uploads.
+ * @param measurementData Graph data from LibreLink Up
+ * @param readingTimestamp Timestamp of the glucose reading
+ * @param validateConnectionSensor Additionally verify that the connection's sensor matches the latest active sensor
+ * @returns Sensor serial number and activation time, or an error description
+ */
+function getSensorInfoForReading(measurementData: GraphData, readingTimestamp: Date, validateConnectionSensor: boolean): SensorInfo
+{
+    try
+    {
+        if (validateConnectionSensor)
+        {
+            const latestActiveSensor = measurementData.activeSensors
+                .map(activeSensor => activeSensor.sensor)
+                .sort((a, b) => b.a - a.a)[0];
+
+            if (!latestActiveSensor || latestActiveSensor.sn !== measurementData.connection.sensor.sn)
+            {
+                throw new Error("Connection.sensor field does not match any sensor found in the activeSensors field");
+            }
+        }
+
+        const activeSensorInfo = findActiveSensorInfo(measurementData.activeSensors, readingTimestamp);
+        return {
+            serialNumber: activeSensorInfo.sn,
+            activationTimeEpoch: activeSensorInfo.activationTime
+        };
+    } catch (error)
+    {
+        return {error: `Error: ${error instanceof Error ? error.message : "Unknown sensor error"}`};
+    }
+}
+
 export async function createFormattedMeasurements(measurementData: GraphData): Promise<Entry[]>
 {
+    config = readConfig()
+
     const formattedMeasurements: Entry[] = [];
     const glucoseMeasurement = measurementData.connection.glucoseMeasurement;
     const measurementDate = getUtcDateFromString(glucoseMeasurement.FactoryTimestamp);
@@ -304,7 +385,8 @@ export async function createFormattedMeasurements(measurementData: GraphData): P
         formattedMeasurements.push({
             date: measurementDate,
             direction: mapTrendArrow(glucoseMeasurement.TrendArrow),
-            sgv: glucoseMeasurement.ValueInMgPerDl
+            sgv: glucoseMeasurement.ValueInMgPerDl,
+            ...(config.sensorInfo && {sensorInfo: getSensorInfoForReading(measurementData, measurementDate, true)})
         });
     }
 
@@ -316,6 +398,7 @@ export async function createFormattedMeasurements(measurementData: GraphData): P
             formattedMeasurements.push({
                 date: entryDate,
                 sgv: glucoseMeasurementHistoryEntry.ValueInMgPerDl,
+                ...(config.sensorInfo && {sensorInfo: getSensorInfoForReading(measurementData, entryDate, false)})
             });
         }
     });

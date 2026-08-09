@@ -16,10 +16,17 @@ export interface NightscoutConfig {
 	nightscoutApp: string;
 }
 
+export interface SensorInfo {
+	serialNumber?: string;
+	activationTimeEpoch?: number;
+	error?: string;
+}
+
 export interface Entry {
 	date: Date;
 	sgv: number;
 	direction?: Direction;
+	sensorInfo?: SensorInfo;
 }
 
 export enum Direction {

@@ -93,6 +93,7 @@ export class Client implements NightscoutAPI {
       device: this.device,
       date: entry.date.getTime(),
       app: this.app,
+      ...(entry.sensorInfo && {sensorInfo: entry.sensorInfo}),
     }));
 
     // APIv3 accepts only single entries

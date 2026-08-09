@@ -5,7 +5,7 @@
  */
 import {AuthTicket, Connection, GlucoseItem, PatientDevice, Sensor} from "./common";
 
-interface ActiveSensor
+export interface ActiveSensor
 {
     sensor: Sensor;
     device: PatientDevice;
