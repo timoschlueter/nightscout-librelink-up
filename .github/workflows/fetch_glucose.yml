@@ -15,6 +15,7 @@ jobs:
             -e LINK_UP_USERNAME="${{ secrets.LINKUP_USERNAME }}" \
             -e LINK_UP_PASSWORD="${{ secrets.LINKUP_PASSWORD }}" \
             -e LINK_UP_REGION="${{ secrets.LINKUP_REGION }}" \
+            -e LINK_UP_CONNECTION="d9852b80-8170-11e9-bfc5-0242ac110009" \
             -e NIGHTSCOUT_URL="lguprivgitrep.larsgul.workers.dev" \
             -e NIGHTSCOUT_API_TOKEN="7d6b38da1d1f0ffc3bf1992929e061845187d7da" \
             -e RUN_ONCE="true" \
