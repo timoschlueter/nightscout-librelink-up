@@ -1,0 +1,22 @@
+name: Fetch Glucose Values
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/5 * * * *'
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run LibreLinkUp to Nightscout Sync
+        run: |
+          docker run --rm \
+            -e LINK_UP_USERNAME="${{ secrets.LINKUP_USERNAME }}" \
+            -e LINK_UP_PASSWORD="${{ secrets.LINKUP_PASSWORD }}" \
+            -e LINK_UP_REGION="${{ secrets.LINKUP_REGION }}" \
+            -e LINK_UP_CONNECTION="d9852b80-8170-11e9-bfc5-0242ac110009" \
+            -e NIGHTSCOUT_URL="lguprivgitrep.larsgul.workers.dev" \
+            -e NIGHTSCOUT_API_TOKEN="librelink-0f8796c8bc21183f" \
+            -e RUN_ONCE="true" \
+            timoschlueter/nightscout-librelink-up:latest
