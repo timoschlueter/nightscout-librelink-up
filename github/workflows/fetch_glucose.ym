@@ -10,15 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run LibreLinkUp to Nightscout Sync
-        env:
-          LINK_UP_USERNAME: ${{ secrets.LINKUP_USERNAME }}
-          LINK_UP_PASSWORD: ${{ secrets.LINKUP_PASSWORD }}
-          LINK_UP_REGION: ${{ secrets.LINKUP_REGION }}
         run: |
           docker run --rm \
-            -e LINK_UP_USERNAME \
-            -e LINK_UP_PASSWORD \
-            -e LINK_UP_REGION \
-            -e NIGHTSCOUT_URL="://herokuapp.com" \
-            -e NIGHTSCOUT_API_TOKEN="your-40-character-sha1-hash-here" \
+            -e LINK_UP_USERNAME="${{ secrets.LINKUP_USERNAME }}" \
+            -e LINK_UP_PASSWORD="${{ secrets.LINKUP_PASSWORD }}" \
+            -e LINK_UP_REGION="${{ secrets.LINKUP_REGION }}" \
+            -e NIGHTSCOUT_URL="lguprivgitrep.larsgul.workers.dev" \
+            -e NIGHTSCOUT_API_TOKEN="7d6b38da1d1f0ffc3bf1992929e061845187d7da" \
             timoschlueter/nightscout-librelink-up:latest
