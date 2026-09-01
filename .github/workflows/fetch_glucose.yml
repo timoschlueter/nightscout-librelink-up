@@ -17,4 +17,5 @@ jobs:
             -e LINK_UP_REGION="${{ secrets.LINKUP_REGION }}" \
             -e NIGHTSCOUT_URL="lguprivgitrep.larsgul.workers.dev" \
             -e NIGHTSCOUT_API_TOKEN="7d6b38da1d1f0ffc3bf1992929e061845187d7da" \
+            -e RUN_ONCE="true" \
             timoschlueter/nightscout-librelink-up:latest
